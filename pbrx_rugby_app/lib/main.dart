@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'PBRX Rugby App',
         theme: ThemeData(
           useMaterial3: true, //this is changing the theme e.g. button looks like
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 244, 198, 253)), //this is colour theme
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 198, 244, 253)), //this is colour theme
         ),
         home: MyHomePage(),
       ),
