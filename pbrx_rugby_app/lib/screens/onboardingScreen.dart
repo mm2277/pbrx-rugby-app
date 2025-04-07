@@ -1,0 +1,68 @@
+import 'package:flutter/material.dart';
+import 'package:pbrx_rugby_app/widgets/onboardingCard.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+class Onboardingscreen extends StatefulWidget{
+  const Onboardingscreen({super.key});
+
+  @override
+  State<Onboardingscreen> createState()=> _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<Onboardingscreen> {
+  
+  static final PageController _pageController = PageController(initialPage: 0);
+  
+  List<Widget> _onboardingPages = [
+    OnboardingCard(
+      image: "assets/images/Welcome_Onboarding_Sign.png",
+      title: "Welcome to the Rugby App",
+      description: "This is the new description for the page",
+      buttonText: "Next",
+      onPressed: () {
+        _pageController.animateToPage(1, duration: Durations.long1, curve: Curves.linear);
+      },
+      ),
+
+      OnboardingCard(
+      image: "assets/images/Onboarding_2.png",
+      title: "What happens now?",
+      description: "We will take some data from you and based on that data",
+      buttonText: "Let's go ->",
+       onPressed: () {
+       
+      },
+      ),
+   
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 50.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                children: _onboardingPages,)),
+            SmoothPageIndicator(
+              effect: ExpandingDotsEffect(
+                activeDotColor: Theme.of(context).colorScheme.primary,
+                dotColor: Theme.of(context).colorScheme.secondary,
+              ),
+              controller: _pageController, 
+              count: _onboardingPages.length,
+              onDotClicked: (index) {
+                _pageController.animateToPage(index, duration: Durations.long1, curve: Curves.linear);
+              },
+            )],
+        ),
+      ),
+    );
+  }
+
+}

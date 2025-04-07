@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:pbrx_rugby_app/screens/onboardingScreen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -11,16 +12,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
+    return MaterialApp(
         title: 'PBRX Rugby App',
         theme: ThemeData(
           useMaterial3: true, //this is changing the theme e.g. button looks like
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 198, 244, 253)), //this is colour theme
         ),
-        home: MyHomePage(),
-      ),
+        home: Onboardingscreen(),
     );
   }
 }
