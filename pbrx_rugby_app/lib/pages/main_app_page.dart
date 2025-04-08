@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-//this is where the app is kinda building what goes on to the UI in widgets
+import 'package:pbrx_rugby_app/widgets/profile_card.dart';
+
 class MainAppPage extends StatefulWidget {
   @override
   State<MainAppPage> createState() => _MainAppPageState();
@@ -13,7 +14,7 @@ class _MainAppPageState extends State<MainAppPage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = Placeholder();
+        page = ProfileCard();
       case 1:
         page = Placeholder();
       default:
