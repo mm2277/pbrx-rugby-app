@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
+import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/onboarding_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -44,7 +45,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       },
       ),
 
-      CreateProfileCard(),
+      CreateProfileCard(storage: StoreDataLocally()),
    
   ];
   @override

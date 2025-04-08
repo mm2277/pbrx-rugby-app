@@ -24,9 +24,42 @@ enum Skills {
 }
 
 class Profile {
-  final String name;
-  final Position position;
-  final List<Skills> skills;
+  String name;
+  Position position;
+  List<Skills> skills;
 
-  const Profile({ required this.name, required this.position, required this.skills});
+  Profile({ required this.name, required this.position, required this.skills});
+
+  @override
+  String toString() {
+    String finalString = "";
+
+    if (name.isNotEmpty) {
+      finalString += "$name\n";
+    } else {
+      finalString += "N/A\n";
+    }
+    
+    finalString += "${position.name}\n";
+    
+    for (Skills skill in skills) {
+      finalString += "${skill.name}\n";
+    }
+
+    finalString += name; 
+
+    return finalString;
+  }
+
+  void setName(String name){
+    this.name = name;
+  }
+
+    void setPosition(Position position){
+    this.position = position;
+  }
+
+    void setSkills(List<Skills> skills){
+    this.skills = skills;
+  }
 }

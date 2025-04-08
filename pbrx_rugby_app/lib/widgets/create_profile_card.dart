@@ -1,20 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
+import 'package:pbrx_rugby_app/models/store_data_locally.dart';
+import 'dart:io';
+
 
 class CreateProfileCard extends StatefulWidget {
-  CreateProfileCard({super.key,});
+  CreateProfileCard({super.key, required this.storage});
+  final StoreDataLocally storage;
 
   @override
   State<CreateProfileCard> createState() => _CreateProfileCardState();
 }
 
 class _CreateProfileCardState extends State<CreateProfileCard>  {
+
   final _formKey = GlobalKey<FormState>();
-  Position _positionSelected = Position.back;
+
+  //input controllers
+  Position _positionSelected = Position.back; 
+  final _nameController = TextEditingController();
   final MultiSelectController<Skills> _skillController = MultiSelectController<Skills>();
 
-  final _nameController = TextEditingController();
+  //final varibales to temporarily move data
+  Profile _profile = Profile(name: "", position: Position.back, skills: []);
+
+  @override
+  void initState() {
+    super.initState();
+    widget.storage.readProfile().then((value) {
+      //checking if profile is already created on device
+      if (!value.contains("N/A")){
+        Navigator.push(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (context) => Placeholder()),
+        );
+      }
+    });
+  }
+
+  Future<File> _saveData() {
+    // setState(() {
+    //   _name = _nameController.text;
+    // });
+
+    // Write the variable as a string to the file.
+    return widget.storage.writeProfile(_profile);
+  }
 
   @override
   void dispose() {
@@ -153,6 +186,12 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
                 if (_formKey.currentState!.validate()) {
                   // If the form is valid, display a snackbar. 
                   //TODO save data locally
+                  print(_nameController.text);
+                  print("APP: something happened");
+                  _profile.setName(_nameController.text);
+                  _profile.setPosition(_positionSelected);
+                  _profile.setSkills(_skillController.selectedItems.map((item) => item.value).toList());
+                  _saveData;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Creating Profile')),
                   );
