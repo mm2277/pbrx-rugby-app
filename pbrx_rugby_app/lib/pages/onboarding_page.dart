@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/onboarding_card.dart';

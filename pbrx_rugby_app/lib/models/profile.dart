@@ -46,8 +46,6 @@ class Profile {
       finalString += "${skill.name}\n";
     }
 
-    finalString += name; 
-
     return finalString;
   }
 

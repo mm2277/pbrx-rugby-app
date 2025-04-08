@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
-import 'dart:io';
 
 
 class CreateProfileCard extends StatefulWidget {
@@ -25,29 +24,20 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
   //final varibales to temporarily move data
   Profile _profile = Profile(name: "", position: Position.back, skills: []);
 
-  @override
-  void initState() {
-    super.initState();
-    widget.storage.readProfile().then((value) {
-      //checking if profile is already created on device
-      if (!value.contains("N/A")){
-        Navigator.push(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => Placeholder()),
-        );
-      }
-    });
-  }
-
-  Future<File> _saveData() {
-    // setState(() {
-    //   _name = _nameController.text;
-    // });
-
-    // Write the variable as a string to the file.
-    return widget.storage.writeProfile(_profile);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   widget.storage.readProfile().then((value) {
+  //     //checking if profile is already created on device
+  //     if (!value.contains("N/A")){
+  //       Navigator.push(
+  //         // ignore: use_build_context_synchronously
+  //         context,
+  //         MaterialPageRoute(builder: (context) => Placeholder()),
+  //       );
+  //     }
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -133,7 +123,7 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
                   );
               }).toList(), 
               onChanged: (value) {
-                value = _positionSelected;
+                _profile.setPosition(value!);
               } ,
               validator: (value) {
                 if (value == null) {
@@ -185,17 +175,26 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
                 // Validate returns true if the form is valid, or false otherwise.
                 if (_formKey.currentState!.validate()) {
                   // If the form is valid, display a snackbar. 
-                  //TODO save data locally
-                  print(_nameController.text);
-                  print("APP: something happened");
-                  _profile.setName(_nameController.text);
-                  _profile.setPosition(_positionSelected);
-                  _profile.setSkills(_skillController.selectedItems.map((item) => item.value).toList());
-                  _saveData;
+                  setState(() {
+                    _profile.setName(_nameController.text);
+                    //_profile.setPosition(_positionSelected);
+                    _profile.setSkills(_skillController.selectedItems.map((item) => item.value).toList());
+                  });
+                  
+                  //saving data to storage
+                  widget.storage.writeProfile(_profile);
+                  //this read is only for testing purposes
+                  widget.storage.readProfile().then((value) {print(value);});
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Creating Profile')),
                   );
-                  //TODO go to home page
+                  
+                  //navigating to home page
+                  Navigator.push(
+                    // ignore: use_build_context_synchronously
+                    context,
+                    MaterialPageRoute(builder: (context) => Placeholder()),
+                  );
                 }
               },
               child: const Text('Create Profile'),
