@@ -1,10 +1,7 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
-import 'package:pbrx_rugby_app/pages/home_page.dart';
+import 'package:pbrx_rugby_app/pages/main_app_page.dart';
 import 'package:pbrx_rugby_app/pages/onboarding_page.dart';
-import 'package:provider/provider.dart';
-import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized(); // required before using async in main
