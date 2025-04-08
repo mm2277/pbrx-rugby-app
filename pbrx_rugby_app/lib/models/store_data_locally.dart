@@ -35,4 +35,9 @@ Future<String> readProfile() async {
     return "N/A";
   }
 }
+Future<bool> checkIfFileExists() async {
+  final file = await _localFile;
+
+  return await file.exists();
+}
 }

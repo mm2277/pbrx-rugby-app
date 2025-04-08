@@ -14,14 +14,6 @@ class OnboardingPage extends StatefulWidget{
 class _OnboardingPageState extends State<OnboardingPage> {
   
   static final PageController _pageController = PageController(initialPage: 0);
-  
-  // static final Profile tmp = Profile(
-  //   name: "Name", 
-  //   position: Position.forward,
-  //   skills: [Skills.boxKick,]
-  // );
-
-  // static final TextEditingController _nameController = TextEditingController();
 
   List<Widget> _onboardingPages = [
     OnboardingCard(

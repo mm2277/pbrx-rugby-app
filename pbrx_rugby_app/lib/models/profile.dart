@@ -60,4 +60,5 @@ class Profile {
     void setSkills(List<Skills> skills){
     this.skills = skills;
   }
+  
 }

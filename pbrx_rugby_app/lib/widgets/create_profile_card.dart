@@ -17,27 +17,11 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
   final _formKey = GlobalKey<FormState>();
 
   //input controllers
-  Position _positionSelected = Position.back; 
   final _nameController = TextEditingController();
   final MultiSelectController<Skills> _skillController = MultiSelectController<Skills>();
 
   //final varibales to temporarily move data
   Profile _profile = Profile(name: "", position: Position.back, skills: []);
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   widget.storage.readProfile().then((value) {
-  //     //checking if profile is already created on device
-  //     if (!value.contains("N/A")){
-  //       Navigator.push(
-  //         // ignore: use_build_context_synchronously
-  //         context,
-  //         MaterialPageRoute(builder: (context) => Placeholder()),
-  //       );
-  //     }
-  //   });
-  // }
 
   @override
   void dispose() {
