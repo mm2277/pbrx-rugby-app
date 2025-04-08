@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:pbrx_rugby_app/widgets/onboardingCard.dart';
+import 'package:flutter/services.dart';
+import 'package:pbrx_rugby_app/models/profile.dart';
+import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
+import 'package:pbrx_rugby_app/widgets/onboarding_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class Onboardingscreen extends StatefulWidget{
-  const Onboardingscreen({super.key});
+class OnboardingPage extends StatefulWidget{
+  const OnboardingPage({super.key});
 
   @override
-  State<Onboardingscreen> createState()=> _OnboardingScreenState();
+  State<OnboardingPage> createState()=> _OnboardingPageState();
 }
 
-class _OnboardingScreenState extends State<Onboardingscreen> {
+class _OnboardingPageState extends State<OnboardingPage> {
   
   static final PageController _pageController = PageController(initialPage: 0);
   
+  static final Profile tmp = Profile(
+    name: "Name", 
+    position: Position.forward,
+    skills: [Skills.boxKick,]
+  );
+
+  static final TextEditingController _nameController = TextEditingController();
+
   List<Widget> _onboardingPages = [
     OnboardingCard(
       image: "assets/images/Welcome_Onboarding_Sign.png",
@@ -28,11 +39,13 @@ class _OnboardingScreenState extends State<Onboardingscreen> {
       image: "assets/images/Onboarding_2.png",
       title: "What happens now?",
       description: "We will take some data from you and based on that data",
-      buttonText: "Let's go ->",
+      buttonText: "Next",
        onPressed: () {
-       
+        _pageController.animateToPage(2, duration: Durations.long1, curve: Curves.linear);
       },
       ),
+
+      CreateProfileCard(),
    
   ];
   @override

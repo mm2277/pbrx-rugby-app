@@ -15,7 +15,7 @@ class OnboardingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.sizeOf(context).height*0.8,
       width: MediaQuery.sizeOf(context).width, 
       child: Column(
@@ -51,16 +51,14 @@ class OnboardingCard extends StatelessWidget {
             ),
             ],
           ), 
-          MaterialButton(
-            minWidth: 300,
+          ElevatedButton(
             onPressed: () => onPressed(),
-            color: Theme.of(context).colorScheme.primary,
             child: Text(
               buttonText, 
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onPrimary,
+                color: Theme.of(context).colorScheme.primary,
             ),),
-            )
+          ),
         ],
       ),
     );
