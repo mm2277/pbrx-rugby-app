@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/onboarding_card.dart';
@@ -16,13 +15,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
   
   static final PageController _pageController = PageController(initialPage: 0);
   
-  static final Profile tmp = Profile(
-    name: "Name", 
-    position: Position.forward,
-    skills: [Skills.boxKick,]
-  );
+  // static final Profile tmp = Profile(
+  //   name: "Name", 
+  //   position: Position.forward,
+  //   skills: [Skills.boxKick,]
+  // );
 
-  static final TextEditingController _nameController = TextEditingController();
+  // static final TextEditingController _nameController = TextEditingController();
 
   List<Widget> _onboardingPages = [
     OnboardingCard(

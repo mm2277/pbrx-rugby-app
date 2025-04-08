@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
+import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 
 class CreateProfileCard extends StatefulWidget {
@@ -11,15 +11,15 @@ class CreateProfileCard extends StatefulWidget {
 
 class _CreateProfileCardState extends State<CreateProfileCard>  {
   final _formKey = GlobalKey<FormState>();
+  Position _positionSelected = Position.back;
+  final MultiSelectController<Skills> _skillController = MultiSelectController<Skills>();
 
   final _nameController = TextEditingController();
-  final MultiSelectController<String> _skillsController = MultiSelectController(
-    deSelectPerpetualSelectedItems: true
-  );
 
   @override
   void dispose() {
     // Clean up the controllers when the widget is disposed.
+    _skillController.dispose();
     _nameController.dispose();
     super.dispose();
   }
@@ -63,7 +63,7 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter some text';
-                } //TODO: add else if for other validation
+                } 
                 return null;
               },
             ),
@@ -100,7 +100,7 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
                   );
               }).toList(), 
               onChanged: (value) {
-                //TODO save value locally
+                value = _positionSelected;
               } ,
               validator: (value) {
                 if (value == null) {
@@ -113,46 +113,35 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
           ),
 
           //multiselect box for skills
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [ Text(
-              "Select your skills",
-              textAlign: TextAlign.left,
-                style: TextStyle(
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: MultiDropdown(
+              controller: _skillController,
+                  
+              fieldDecoration: FieldDecoration(
+                border: OutlineInputBorder(),
+                labelText: "Select your skills",
+                labelStyle: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                )),
-              MultiSelectContainer(
-                itemsDecoration: MultiSelectDecorations(
-                    
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Theme.of(context).colorScheme.secondary),
-                      borderRadius: BorderRadius.circular(20)
-                    ),
-              
-                    selectedDecoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(5)
-                    ),
-                    
-                  ),
-                items: Skills.values.map((p) {
-                    return MultiSelectCard(
-                      value: p,
-                      child: Text(
-                        p.name,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w300,
-                        )
-                      ),
-                    );
-                  }).toList(),  onChange: (allSelectedItems, selectedItem) {}
+                )
               ),
-            ],
+              chipDecoration: ChipDecoration(
+                    
+              ),
+            
+              dropdownItemDecoration: DropdownItemDecoration(
+                textColor:  Theme.of(context).colorScheme.secondary,
+                    //backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              items: Skills.values.map((p) {
+                  return DropdownItem(
+                    value: p,
+                    label: p.name
+                    );
+              }).toList(),
+            ),
           ),
 
           //Creating Profile Button
@@ -175,6 +164,6 @@ class _CreateProfileCardState extends State<CreateProfileCard>  {
           ),
         ],
       ),
-    );
+      );
   }
 }
