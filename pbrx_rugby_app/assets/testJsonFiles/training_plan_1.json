@@ -1,0 +1,30 @@
+{
+    "weeksDuration": 4,
+    "season": "inSeason",
+    "dateCreated": "2025-04-08T10:30:00.000Z",
+    "weeklyPlans": [
+      {
+        "days": [
+          [
+            {
+              "durationMins": 45,
+              "type": "hiit",
+              "warmup": [
+                { "name": "Jumping Jacks", "reps": 15, "sets": 2 }
+              ],
+              "mainWorkout": [
+                { "name": "Burpees", "reps": 12, "sets": 3 }
+              ]
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  }
+  

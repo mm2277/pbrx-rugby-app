@@ -17,9 +17,8 @@ class Session {
   factory Session.fromJson(Map<String, dynamic> json) => Session(
         durationMins: json['durationMins'],
         type: SessionType.fromJson(json['type']),
-        warmup: (json['warmup'] as List)
-            .map((e) => Exercise.fromJson(e))
-            .toList(),
+        warmup:
+            (json['warmup'] as List).map((e) => Exercise.fromJson(e)).toList(),
         mainWorkout: (json['mainWorkout'] as List)
             .map((e) => Exercise.fromJson(e))
             .toList(),

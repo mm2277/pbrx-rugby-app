@@ -18,28 +18,23 @@ class ProfileCard extends StatefulWidget {
 }
 
 class _ProfileCardState extends State<ProfileCard> {
-  
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.sizeOf(context).height*0.8,
-      width: MediaQuery.sizeOf(context).width, 
+      height: MediaQuery.sizeOf(context).height * 0.8,
+      width: MediaQuery.sizeOf(context).width,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           Padding(
             padding: EdgeInsets.all(50.0),
             child: Icon(
-              Icons.account_circle_outlined,  
+              Icons.account_circle_outlined,
               size: 80,
-              ),
+            ),
           ),
-
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
@@ -48,13 +43,9 @@ class _ProfileCardState extends State<ProfileCard> {
               Text(
                 "Name",
               ),
-              Text(
-                widget.profile.safeName
-              )
+              Text(widget.profile.safeName)
             ],
           ),
-
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
@@ -63,13 +54,9 @@ class _ProfileCardState extends State<ProfileCard> {
               Text(
                 "Position",
               ),
-              Text(
-                widget.profile.safePosition
-              )
+              Text(widget.profile.safePosition)
             ],
           ),
-
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
@@ -78,17 +65,10 @@ class _ProfileCardState extends State<ProfileCard> {
               Text(
                 "Skills",
               ),
-              Text(
-                widget.profile.safeSkills
-              )
+              Text(widget.profile.safeSkills)
             ],
           ),
-
-          ElevatedButton(
-            onPressed: widget.onEdit,
- 
-            child: Text('Edit Profile')
-          ),
+          ElevatedButton(onPressed: widget.onEdit, child: Text('Edit Profile')),
         ],
       ),
     );

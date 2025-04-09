@@ -2,15 +2,15 @@ enum Position {
   forward(name: 'Forward'),
   back(name: 'Back');
 
-  const Position({ required this.name });
+  const Position({required this.name});
 
   final String name;
 
   Position positionFromString(String value) {
-  return Position.values.firstWhere(
-    (e) => e.name == value,
-  );
-}
+    return Position.values.firstWhere(
+      (e) => e.name == value,
+    );
+  }
 }
 
 enum Skills {
@@ -24,14 +24,15 @@ enum Skills {
   lineoutJumper(name: "Lineout Jumper"),
   hookerThrow(name: "Hooker Throw");
 
-  const Skills({ required this.name });
+  const Skills({required this.name});
 
   final String name;
 
   Skills skillsFromString(String value) {
-  return Skills.values.firstWhere(
-    (e) => e.name == value,
-  );}
+    return Skills.values.firstWhere(
+      (e) => e.name == value,
+    );
+  }
 }
 
 class Profile {
@@ -39,7 +40,7 @@ class Profile {
   Position? position;
   List<Skills>? skills;
 
-  Profile({ this.name, this.position, this.skills });
+  Profile({this.name, this.position, this.skills});
 
   String get safeName => name ?? "N/A";
 
@@ -47,10 +48,9 @@ class Profile {
 
   List<Skills> get safeSkillsList => skills ?? [];
 
-  String get safeSkills =>
-      (skills != null && skills!.isNotEmpty)
-          ? skills!.map((s) => s.name).join(', ')
-          : "No skills selected";
+  String get safeSkills => (skills != null && skills!.isNotEmpty)
+      ? skills!.map((s) => s.name).join(', ')
+      : "No skills selected";
 
   @override
   String toString() {
@@ -71,44 +71,44 @@ class Profile {
   }
 
   // Setters
-  void setName(String name){
+  void setName(String name) {
     this.name = name;
   }
 
-  void setPosition(Position position){
+  void setPosition(Position position) {
     this.position = position;
   }
 
-  void setSkills(List<Skills> skills){
+  void setSkills(List<Skills> skills) {
     this.skills = skills;
   }
-  
+
   //function to turn a string into a profile type
-static Profile stringToProfile(String string) {
-  List<String> lines = string.trim().split('\n');
+  static Profile stringToProfile(String string) {
+    List<String> lines = string.trim().split('\n');
 
-  if (lines.length < 2) {
-    throw FormatException("Invalid profile format: expected at least name and position");
-  }
+    if (lines.length < 2) {
+      throw FormatException(
+          "Invalid profile format: expected at least name and position");
+    }
 
-  final String name = lines[0];
-  final String positionString = lines[1];
+    final String name = lines[0];
+    final String positionString = lines[1];
 
-  // Convert position string to enum
-  final Position position = Position.values.firstWhere(
-    (p) => p.name == positionString,
-    orElse: () => Position.back,
-  );
-
-  // Convert remaining lines to skills
-  final List<Skills> skills = lines.sublist(2).map((line) {
-    return Skills.values.firstWhere(
-      (s) => s.name == line,
-      orElse: () => Skills.boxKick, // fallback skill if unrecognized
+    // Convert position string to enum
+    final Position position = Position.values.firstWhere(
+      (p) => p.name == positionString,
+      orElse: () => Position.back,
     );
-  }).toList();
 
-  return Profile(name: name, position: position, skills: skills);
-}
+    // Convert remaining lines to skills
+    final List<Skills> skills = lines.sublist(2).map((line) {
+      return Skills.values.firstWhere(
+        (s) => s.name == line,
+        orElse: () => Skills.boxKick, // fallback skill if unrecognized
+      );
+    }).toList();
 
+    return Profile(name: name, position: position, skills: skills);
+  }
 }
