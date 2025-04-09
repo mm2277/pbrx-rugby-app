@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:pbrx_rugby_app/models/store_data_locally.dart';
-
 enum Position {
   forward(name: 'Forward'),
   back(name: 'Back');
@@ -38,66 +35,80 @@ enum Skills {
 }
 
 class Profile {
-  String name;
-  Position position;
-  List<Skills> skills;
+  String? name;
+  Position? position;
+  List<Skills>? skills;
 
-  Profile({ required this.name, required this.position, required this.skills});
+  Profile({ this.name, this.position, this.skills });
+
+  String get safeName => name ?? "N/A";
+
+  String get safePosition => position?.name ?? "Unknown";
+
+  List<Skills> get safeSkillsList => skills ?? [];
+
+  String get safeSkills =>
+      (skills != null && skills!.isNotEmpty)
+          ? skills!.map((s) => s.name).join(', ')
+          : "No skills selected";
 
   @override
   String toString() {
     String finalString = "";
 
-    if (name.isNotEmpty) {
-      finalString += "$name\n";
+    finalString += "${name ?? "N/A"}\n";
+    finalString += "${position?.name ?? "Unknown"}\n";
+
+    if (skills != null && skills!.isNotEmpty) {
+      for (var skill in skills!) {
+        finalString += "${skill.name}\n";
+      }
     } else {
-      finalString += "N/A\n";
-    }
-    
-    finalString += "${position.name}\n";
-    
-    for (Skills skill in skills) {
-      finalString += "${skill.name}\n";
+      finalString += "No skills\n";
     }
 
     return finalString;
   }
 
+  // Setters
   void setName(String name){
     this.name = name;
   }
 
-    void setPosition(Position position){
+  void setPosition(Position position){
     this.position = position;
   }
 
-    void setSkills(List<Skills> skills){
+  void setSkills(List<Skills> skills){
     this.skills = skills;
   }
   
-  Profile stringToProfile(String string){
-    Profile profile = Profile(name: "", position: Position.back, skills: []);
-    
-    List<String> listOfLines = string.split("\n");
-    //first line should be name
-    profile.setName(listOfLines[0]);
+  //function to turn a string into a profile type
+static Profile stringToProfile(String string) {
+  List<String> lines = string.trim().split('\n');
 
-    //second line is the postion
-    Position position = Position.back;
-    position = position.positionFromString(listOfLines[1]);
-    
-    //the rest of the lines are skills
-    List<Skills> skills = [];
-    for (int i = 2; i < listOfLines.length; i++) {
-      //tmp value
-      Skills skill = Skills.boxKick;
-
-      skills.add(skill);
-    }
-    profile.setSkills(skills);
-    //second line should be name of position
-
-    return profile;
+  if (lines.length < 2) {
+    throw FormatException("Invalid profile format: expected at least name and position");
   }
+
+  final String name = lines[0];
+  final String positionString = lines[1];
+
+  // Convert position string to enum
+  final Position position = Position.values.firstWhere(
+    (p) => p.name == positionString,
+    orElse: () => Position.back,
+  );
+
+  // Convert remaining lines to skills
+  final List<Skills> skills = lines.sublist(2).map((line) {
+    return Skills.values.firstWhere(
+      (s) => s.name == line,
+      orElse: () => Skills.boxKick, // fallback skill if unrecognized
+    );
+  }).toList();
+
+  return Profile(name: name, position: position, skills: skills);
+}
 
 }

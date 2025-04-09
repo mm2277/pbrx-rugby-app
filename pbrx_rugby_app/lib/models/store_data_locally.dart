@@ -40,4 +40,21 @@ Future<bool> checkIfFileExists() async {
 
   return await file.exists();
 }
+
+Future<void> deleteFile() async {
+  final file = await _localFile;
+  bool fileExists = await checkIfFileExists();
+
+
+  if (fileExists) {
+    try {
+      await file.delete();
+      print('File deleted');
+    } catch (e) {
+      print('Error deleting file: $e');
+    }
+  } else {
+    print('File does not exist');
+  }
+}
 }

@@ -1,20 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:pbrx_rugby_app/models/profile.dart';
+import 'package:pbrx_rugby_app/models/store_data_locally.dart';
+import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/profile_card.dart';
 
 class MainAppPage extends StatefulWidget {
+  final Profile profile;
+
+  const MainAppPage({super.key, required this.profile});
+
   @override
   State<MainAppPage> createState() => _MainAppPageState();
 }
 
 class _MainAppPageState extends State<MainAppPage> {
   var selectedIndex = 0;
+  bool editing = false;
 
+  void toggleEditMode() {
+    setState(() {
+      editing = !editing;
+    });
+
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = ProfileCard();
+         page = editing
+            ? CreateProfileCard(storage: StoreDataLocally(), existingProfile: widget.profile,) // or pass your storage instance
+            : ProfileCard(profile: widget.profile, onEdit: toggleEditMode);
       case 1:
         page = Placeholder();
       default:
