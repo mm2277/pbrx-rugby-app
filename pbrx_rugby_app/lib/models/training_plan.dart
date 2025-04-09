@@ -27,11 +27,13 @@ class TrainingPlan {
   final int weeksDuration;
   final Season season;
   final List<Week> weeklyPlans;
+  final DateTime dateCreated;
 
   TrainingPlan({
     required this.weeksDuration,
     required this.season,
     required this.weeklyPlans,
+    required this.dateCreated,
   });
 
   factory TrainingPlan.fromJson(Map<String, dynamic> json) => TrainingPlan(
@@ -40,11 +42,13 @@ class TrainingPlan {
         weeklyPlans: (json['weeklyPlans'] as List)
             .map((week) => Week.fromJson(week))
             .toList(),
+        dateCreated: DateTime.parse(json['dateCreated']),
       );
 
   Map<String, dynamic> toJson() => {
         'weeksDuration': weeksDuration,
         'season': season.toJson(),
         'weeklyPlans': weeklyPlans.map((w) => w.toJson()).toList(),
+        'dateCreated': dateCreated.toIso8601String(),
       };
 }
