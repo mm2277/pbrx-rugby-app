@@ -196,12 +196,14 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
 
                   //navigating to home page
                   Navigator.push(
-                    // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
-                        builder: (context) => MainAppPage(
-                              profile: widget.existingProfile!,
-                            )),
+                      builder: (context) => MainAppPage(
+                        profile: _profile ??
+                            Profile(
+                                name: "", position: Position.back, skills: []),
+                      ),
+                    ),
                   );
                 }
               },

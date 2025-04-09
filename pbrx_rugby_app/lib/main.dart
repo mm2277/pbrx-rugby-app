@@ -10,14 +10,21 @@ void main() async {
 
   final storage = StoreDataLocally();
   //this is here fore testing
-  //storage.deleteFile();
+  storage.deleteFile();
   late Profile profile;
 
   bool fileExists = await storage.checkIfProfileFileExists();
 
   if (fileExists) {
     String profileString = await storage.readProfile();
-    profile = Profile.stringToProfile(profileString);
+    try {
+      profile = Profile.stringToProfile(profileString);
+    } catch (e) {
+      print('Failed to parse profile: $e');
+      // You could assign a default profile instead:
+      profile = Profile(name: "", position: Position.back, skills: []);
+      fileExists = false;
+    }
   } else {
     profile = Profile(name: "", position: Position.back, skills: []);
   }
