@@ -14,11 +14,11 @@ class Exercise {
   });
 
   factory Exercise.fromJson(Map<String, dynamic> json) => Exercise(
-        name: json['name'],
-        reps: json['reps'],
-        sets: json['sets'],
-        description: json['description'],
-        imageUrl: json['imageUrl'],
+        name: json['name'] ?? 'Unnamed Exercise',
+        reps: json['reps'] ?? 0,
+        sets: json['sets'] ?? 0,
+        description: json['description'] ?? '',
+        imageUrl: json['imageUrl'] ?? '',
       );
 
   Map<String, dynamic> toJson() => {

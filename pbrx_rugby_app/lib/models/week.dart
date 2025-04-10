@@ -9,8 +9,10 @@ class Week {
     final dynamic rawDays = json['days'];
     List<List<Session>> parsedDays = [];
 
-    if (rawDays is List) {
-      // Proper list format
+    if (rawDays == null) {
+      // Default empty week
+      parsedDays = List.generate(7, (_) => []);
+    } else if (rawDays is List) {
       parsedDays = rawDays.map<List<Session>>((day) {
         if (day is List) {
           return day.map<Session>((s) => Session.fromJson(s)).toList();
@@ -21,7 +23,6 @@ class Week {
         }
       }).toList();
     } else if (rawDays is Map) {
-      // Handle dictionary-formatted days like { "0": [...], "1": [...], ... }
       for (int i = 0; i < 7; i++) {
         final dayData = rawDays[i.toString()];
         if (dayData is List) {
@@ -34,10 +35,10 @@ class Week {
         }
       }
     } else {
-      throw FormatException("Unsupported format for 'days'");
+      throw FormatException(
+          "Unsupported format for 'days': ${rawDays.runtimeType}");
     }
 
-    // Ensure we always have 7 days
     while (parsedDays.length < 7) {
       parsedDays.add([]);
     }

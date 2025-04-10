@@ -14,7 +14,7 @@ class TrainingPlanGenerator {
     required String season,
   }) async {
     final url = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b-latest:generateContent?key=$googleApiKey',
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=$googleApiKey',
     );
 
     final prompt = _buildPromptFromProfile(profile, weeksDuration, season);
@@ -74,16 +74,42 @@ class TrainingPlanGenerator {
         profile.name?.isNotEmpty == true ? profile.name : 'Unnamed Player';
 
     return '''
-Generate a structured JSON rugby training plan for the following player:
+You are a personal training for a rugby player, generate a training plan for a player with these attributes: 
 - Name: $playerName
 - Position: $positionName
 - Skills: $skillsList
-- Duration: $weeks weeks
 - Season: $season
-Requirements:
-- weeksDuration: integer (e.g. 4)
-- season: either "inSeason" or "outSeason"
-- dateCreated: in ISO 8601 format (e.g. "2024-04-10")
+
+The training plan must be  $weeks weeks long and follow this JSON structure:
+{
+  "weeksDuration": $weeks,
+  "season": $season,
+  "dateCreated": (replace with today's date)
+  "weeklyPlans": [
+    {
+      "days": [
+        [
+          {
+            "durationMins": (estimate the duration for each session),
+            "type": "hiit",
+            "warmup": [
+              { "name": "Jumping Jacks", "reps": 20, "sets": 2 }
+            ],
+            "mainWorkout": [
+              { "name": "Burpees", "reps": 10, "sets": 3 }
+            ]
+          }
+        ],
+        [], [], [], [], [], []
+      ]
+    }
+  ]
+}
+
+Replace and add things where necessary to fill out the training plan.
+
+Other Requirements:
+- dateCreated: in ISO 8601 format (e.g. "2024-04-10") must be today's date
 - weeklyPlans: list of weeks
 - Each week has 7 days, each day is a list of 0 or more sessions
 - Each session is an object that must have:

@@ -1,5 +1,5 @@
 import 'package:pbrx_rugby_app/models/exercise.dart';
-import 'package:pbrx_rugby_app/models/training_plan.dart';
+import 'package:pbrx_rugby_app/models/session_type.dart';
 
 class Session {
   final int durationMins;

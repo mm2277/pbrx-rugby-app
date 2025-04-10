@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
@@ -86,42 +88,50 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
       },
     );
 
-    if (result != null) {
-      final weeks = result['weeks'] as int;
-      final season = result['season'] as String;
+    await _generatePlan(result);
+  }
+
+  Future<void> _generatePlan(Map<String, dynamic>? result) async {
+    if (result == null) return;
+
+    final weeks = result['weeks'] as int;
+    final season = result['season'] as String;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Generating training plan...')),
+    );
+
+    if (key == null) {
+      throw Exception("Google Gemini API key not found in .env file");
+    }
+
+    final generator = TrainingPlanGenerator(googleApiKey: key!);
+    final newPlan = await generator.generatePlanFromProfile(
+      widget.profile,
+      weeksDuration: weeks,
+      season: season,
+    );
+
+    if (newPlan != null) {
+      await widget.storage.writeTrainingPlan(newPlan);
+
+      setState(() {
+        sortedPlans.insert(0, newPlan);
+        _expanded.clear();
+        _checked.clear();
+        for (int i = 0; i < sortedPlans.length; i++) {
+          _expanded[i] = i == 0;
+          _checked[i] = false;
+        }
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Generating training plan...')),
+        const SnackBar(content: Text('Training plan created!')),
       );
-
-      if (key == null) {
-        throw Exception("Google Gemini API key not found in .env file");
-      }
-
-      final generator = TrainingPlanGenerator(googleApiKey: key!);
-      final newPlan = await generator.generatePlanFromProfile(
-        widget.profile,
-        weeksDuration: weeks,
-        season: season,
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to generate plan')),
       );
-
-      if (newPlan != null) {
-        await widget.storage.writeTrainingPlan(newPlan);
-
-        setState(() {
-          sortedPlans.insert(0, newPlan);
-          _expanded[0] = true;
-          _checked[0] = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Training plan created!')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to generate plan')),
-        );
-      }
     }
   }
 
@@ -144,7 +154,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                 final plan = sortedPlans[index];
                 final isCurrent = index == 0;
                 final title =
-                    isCurrent ? 'Current Workout' : 'Past Workout ${index}';
+                    isCurrent ? 'Current Workout' : 'Past Workout $index';
                 final formattedDate =
                     DateFormat('yyyy-MM-dd').format(plan.dateCreated);
 
@@ -171,7 +181,8 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                     ? Icons.expand_less
                                     : Icons.expand_more),
                                 onPressed: () => setState(() =>
-                                    _expanded[index] = !_expanded[index]!)),
+                                    _expanded[index] =
+                                        !(_expanded[index] ?? false))),
                           ],
                         ),
                         if (_expanded[index] == true) ...[
@@ -216,7 +227,15 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                           Row(
                             children: [
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  final plan = sortedPlans[index];
+                                  final weeks = plan.weeksDuration;
+                                  final season = plan
+                                      .season.name; // converts enum to string
+
+                                  _generatePlan(
+                                      {'weeks': weeks, 'season': season});
+                                },
                                 child: const Text('Regenerate'),
                               ),
                               const SizedBox(width: 8),
