@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/pages/main_app_page.dart';
@@ -10,8 +11,17 @@ void main() async {
 
   final storage = StoreDataLocally();
   //this is here fore testing
-  storage.deleteFile();
+  //storage.deleteFile();
   late Profile profile;
+
+  try {
+    await dotenv.load(fileName: "assets/envFiles/testEnvironmentFile.env");
+  } on FileNotFoundError catch (e) {
+    print("testEnvironmentFile.env file not found: $e");
+    // Optionally: exit the app, show a dialog, or provide fallback
+  } catch (e) {
+    print("Unexpected error loading testEnvironmentFile.env: $e");
+  }
 
   bool fileExists = await storage.checkIfProfileFileExists();
 

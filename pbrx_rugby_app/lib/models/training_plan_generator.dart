@@ -4,44 +4,63 @@ import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/training_plan.dart';
 
 class TrainingPlanGenerator {
-  final String openAiKey;
+  final String googleApiKey;
 
-  TrainingPlanGenerator({required this.openAiKey});
+  TrainingPlanGenerator({required this.googleApiKey});
 
   Future<TrainingPlan?> generatePlanFromProfile(Profile profile) async {
-    final uri = Uri.parse("https://api.openai.com/v1/chat/completions");
+    final url = Uri.parse(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b-latest:generateContent?key=$googleApiKey',
+    );
 
     final prompt = _buildPromptFromProfile(profile);
 
     final response = await http.post(
-      uri,
-      headers: {
-        "Authorization": "Bearer $openAiKey",
-        "Content-Type": "application/json",
-      },
+      url,
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "model": "gpt-4",
-        "messages": [
+        "contents": [
           {
-            "role": "system",
-            "content":
-                "You are a sports performance coach generating structured rugby training plans."
-          },
-          {"role": "user", "content": prompt}
+            "role": "user",
+            "parts": [
+              {"text": prompt}
+            ]
+          }
         ],
-        "temperature": 0.7
+        "generationConfig": {
+          "temperature": 0.7,
+          "topK": 40,
+          "topP": 0.95,
+          "maxOutputTokens": 2048
+        }
       }),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      final jsonString = data["choices"][0]["message"]["content"];
-      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-      return TrainingPlan.fromJson(jsonMap);
-    } else {
-      print("OpenAI error: ${response.statusCode}, ${response.body}");
-      return null;
+      final jsonString =
+          data['candidates']?[0]?['content']?['parts']?[0]?['text'];
+
+      if (jsonString != null) {
+        final cleanedJsonString = jsonString
+            .replaceAll("```json", "")
+            .replaceAll("```", "")
+            .replaceAllMapped(RegExp(r'/\*.*?\*/', dotAll: true),
+                (_) => '') // remove /* ... */ inline comments
+            .split('\n')
+            .where(
+                (line) => !line.trim().startsWith('//')) // remove line comments
+            .join('\n')
+            .trim();
+
+        final jsonMap = jsonDecode(cleanedJsonString);
+        return TrainingPlan.fromJson(jsonMap);
+      }
     }
+
+    print("Gemini API Error: ${response.statusCode}");
+    print(response.body);
+    return null;
   }
 
   String _buildPromptFromProfile(Profile profile) {
@@ -51,26 +70,31 @@ class TrainingPlanGenerator {
         profile.name?.isNotEmpty == true ? profile.name : 'Unnamed Player';
 
     return '''
-Generate a JSON training plan for a rugby player with the following profile:
-Name: $playerName
-Position: $positionName
-Skills: $skillsList
+Generate a structured JSON rugby training plan for the following player:
+- Name: $playerName
+- Position: $positionName
+- Skills: $skillsList
 
-Format the JSON to match this structure:
+Requirements:
+- weeksDuration: integer (e.g. 4)
+- season: either "inSeason" or "outSeason"
+- dateCreated: in ISO 8601 format (e.g. "2024-04-10")
+- weeklyPlans: list of weeks
+- Each week has 7 days, each day is a list of 0 or more sessions
+- Each session is an object that must have:
+  - durationMins: integer
+  - type: one of "hiit", "cardio", "weights", etc.
+  - warmup: list of exercise objects
+  - mainWorkout: list of exercise objects
+
+Each exercise must be a full object:
 {
-  "weeksDuration": int,
-  "season": "inSeason" or "outSeason",
-  "dateCreated": "ISO 8601 format",
-  "weeklyPlans": [
-    {
-      "days": [
-        [ { "durationMins": 45, "type": "hiit", "warmup": [...], "mainWorkout": [...] } ],
-        [],
-        ...
-      ]
-    }
-  ]
+  "name": "Push Ups",
+  "sets": 3,
+  "reps": 12
 }
+
+Do NOT use strings in warmup or mainWorkout. No explanations or markdown. Respond ONLY with valid, clean JSON.
 ''';
   }
 }

@@ -38,3 +38,4 @@ flutter:
   - assets/testJsonFiles/training_plan_1.json
   - assets/testJsonFiles/training_plan_2.json
   - assets/testJsonFiles/training_plan_3.json
+  - assets/envFiles/testEnvironmentFile.env

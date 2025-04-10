@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/training_plan.dart';
@@ -25,6 +26,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
   late List<TrainingPlan> sortedPlans;
   final Map<int, bool> _expanded = {};
   final Map<int, bool> _checked = {};
+  final key = dotenv.env['GOOGLE_GEMINI_API_KEY'];
 
   @override
   void initState() {
@@ -49,9 +51,10 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Generating training plan...')),
               );
-
-              final generator =
-                  TrainingPlanGenerator(openAiKey: 'YOUR_API_KEY_HERE');
+              if (key == null) {
+                throw Exception("OpenAI API key not found in .env file");
+              }
+              final generator = TrainingPlanGenerator(googleApiKey: key!);
               final newPlan = await generator.generatePlanFromProfile(
                   widget.profile); // <-- use passed-in profile
 
@@ -101,7 +104,8 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                 style: Theme.of(context).textTheme.titleMedium),
                             const Spacer(),
                             Checkbox(
-                              value: _checked[index],
+                              value:
+                                  _checked[index] ?? false, // fallback to false
                               onChanged: (val) => setState(
                                   () => _checked[index] = val ?? false),
                             ),
@@ -117,17 +121,40 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                           const Divider(),
                           for (int weekIndex = 0;
                               weekIndex < plan.weeklyPlans.length;
-                              weekIndex++)
+                              weekIndex++) ...[
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text('Week ${weekIndex + 1}',
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall),
+                            ),
                             for (int day = 0; day < 7; day++)
                               for (int session = 0;
                                   session <
                                       plan.weeklyPlans[weekIndex].days[day]
                                           .length;
-                                  session++)
+                                  session++) ...[
                                 Text(
-                                  'Day ${day + 1}, Session ${session + 1}: do plan',
-                                  style: const TextStyle(fontSize: 14),
+                                  'Day ${day + 1}, Session ${session + 1}:',
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          'Warmup: ${plan.weeklyPlans[weekIndex].days[day][session].warmup.map((e) => '${e.name} (${e.sets}x${e.reps})').join(', ')}'),
+                                      Text(
+                                          'Workout: ${plan.weeklyPlans[weekIndex].days[day][session].mainWorkout.map((e) => '${e.name} (${e.sets}x${e.reps})').join(', ')}'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                          ],
                           const SizedBox(height: 8),
                           Row(
                             children: [

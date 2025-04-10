@@ -15,13 +15,16 @@ class Session {
   });
 
   factory Session.fromJson(Map<String, dynamic> json) => Session(
-        durationMins: json['durationMins'],
-        type: SessionType.fromJson(json['type']),
-        warmup:
-            (json['warmup'] as List).map((e) => Exercise.fromJson(e)).toList(),
-        mainWorkout: (json['mainWorkout'] as List)
-            .map((e) => Exercise.fromJson(e))
-            .toList(),
+        durationMins: json['durationMins'] ?? 0,
+        type: SessionType.fromJson(json['type'] ?? 'hiit'),
+        warmup: (json['warmup'] as List<dynamic>?)
+                ?.map((e) => Exercise.fromJson(e))
+                .toList() ??
+            [],
+        mainWorkout: (json['mainWorkout'] as List<dynamic>?)
+                ?.map((e) => Exercise.fromJson(e))
+                .toList() ??
+            [],
       );
 
   Map<String, dynamic> toJson() => {
