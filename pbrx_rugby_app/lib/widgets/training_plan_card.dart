@@ -194,8 +194,12 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                               padding:
                                   const EdgeInsets.symmetric(vertical: 8.0),
                               child: Text('Week ${weekIndex + 1}',
-                                  style:
-                                      Theme.of(context).textTheme.titleSmall),
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary)),
                             ),
                             for (int day = 0; day < 7; day++)
                               for (int session = 0;
@@ -206,10 +210,15 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                 const SizedBox(height: 12),
                                 Text(
                                   'Day ${day + 1}',
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
                                 ),
                                 Text(
-                                  'Session ${session + 1}: ${plan.weeklyPlans[weekIndex].days[day][session].type.name}',
+                                  'Session ${session + 1}: ${plan.weeklyPlans[weekIndex].days[day][session].type.name} [${plan.weeklyPlans[weekIndex].days[day][session].durationMins} mins]',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -228,8 +237,23 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                     children: plan.weeklyPlans[weekIndex]
                                         .days[day][session].warmup
                                         .map((exercise) {
-                                      return Text(
-                                          '• ${exercise.name} (${exercise.sets}x${exercise.reps})');
+                                      return Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                                  '• ${exercise.name}: ${exercise.sets} sets of ${exercise.reps} reps')),
+                                          if (exercise.description != null &&
+                                              exercise.description!.isNotEmpty)
+                                            Tooltip(
+                                              message: exercise.description!,
+                                              child: const Icon(
+                                                  Icons.info_outline,
+                                                  size: 16),
+                                            ),
+                                        ],
+                                      );
                                     }).toList(),
                                   ),
                                 ),
@@ -246,8 +270,23 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                     children: plan.weeklyPlans[weekIndex]
                                         .days[day][session].mainWorkout
                                         .map((exercise) {
-                                      return Text(
-                                          '• ${exercise.name} (${exercise.sets}x${exercise.reps})');
+                                      return Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                              child: Text(
+                                                  '• ${exercise.name}: ${exercise.sets} sets of ${exercise.reps} reps')),
+                                          if (exercise.description != null &&
+                                              exercise.description!.isNotEmpty)
+                                            Tooltip(
+                                              message: exercise.description!,
+                                              child: const Icon(
+                                                  Icons.info_outline,
+                                                  size: 16),
+                                            ),
+                                        ],
+                                      );
                                     }).toList(),
                                   ),
                                 ),

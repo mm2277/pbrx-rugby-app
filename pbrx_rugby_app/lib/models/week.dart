@@ -1,16 +1,15 @@
 import 'package:pbrx_rugby_app/models/session.dart';
 
 class Week {
-  final List<List<Session>> days; // 7 days, each may have 0+ sessions
+  final List<List<Session>> days; // Always 7 days
 
-  Week({required this.days}) : assert(days.length == 7);
+  Week({required this.days});
 
   factory Week.fromJson(Map<String, dynamic> json) {
     final dynamic rawDays = json['days'];
     List<List<Session>> parsedDays = [];
 
     if (rawDays == null) {
-      // Default empty week
       parsedDays = List.generate(7, (_) => []);
     } else if (rawDays is List) {
       parsedDays = rawDays.map<List<Session>>((day) {
@@ -39,13 +38,16 @@ class Week {
           "Unsupported format for 'days': ${rawDays.runtimeType}");
     }
 
-    while (parsedDays.length < 7) {
-      parsedDays.add([]);
+    // Normalize to exactly 7 days
+    if (parsedDays.length > 7) {
+      parsedDays = parsedDays.sublist(0, 7); // trim extras
+    } else if (parsedDays.length < 7) {
+      parsedDays.addAll(List.generate(
+          7 - parsedDays.length, (_) => [])); // pad with empty days
     }
 
     return Week(days: parsedDays);
   }
-
   Map<String, dynamic> toJson() => {
         'days': days.map((day) => day.map((s) => s.toJson()).toList()).toList(),
       };
