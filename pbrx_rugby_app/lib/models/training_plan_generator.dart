@@ -8,12 +8,16 @@ class TrainingPlanGenerator {
 
   TrainingPlanGenerator({required this.googleApiKey});
 
-  Future<TrainingPlan?> generatePlanFromProfile(Profile profile) async {
+  Future<TrainingPlan?> generatePlanFromProfile(
+    Profile profile, {
+    required int weeksDuration,
+    required String season,
+  }) async {
     final url = Uri.parse(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b-latest:generateContent?key=$googleApiKey',
     );
 
-    final prompt = _buildPromptFromProfile(profile);
+    final prompt = _buildPromptFromProfile(profile, weeksDuration, season);
 
     final response = await http.post(
       url,
@@ -63,7 +67,7 @@ class TrainingPlanGenerator {
     return null;
   }
 
-  String _buildPromptFromProfile(Profile profile) {
+  String _buildPromptFromProfile(Profile profile, int weeks, String season) {
     final positionName = profile.position?.name ?? 'Unknown';
     final skillsList = profile.skills?.map((s) => s.name).join(', ') ?? 'None';
     final playerName =
@@ -74,7 +78,8 @@ Generate a structured JSON rugby training plan for the following player:
 - Name: $playerName
 - Position: $positionName
 - Skills: $skillsList
-
+- Duration: $weeks weeks
+- Season: $season
 Requirements:
 - weeksDuration: integer (e.g. 4)
 - season: either "inSeason" or "outSeason"

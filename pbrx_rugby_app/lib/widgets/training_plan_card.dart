@@ -39,6 +39,92 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     }
   }
 
+  Future<void> _handleNewPlanGeneration() async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) {
+        int weeks = 4;
+        String season = 'inSeason';
+
+        return AlertDialog(
+          title: const Text('New Training Plan Settings'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                decoration:
+                    const InputDecoration(labelText: 'Duration (weeks)'),
+                keyboardType: TextInputType.number,
+                onChanged: (val) {
+                  weeks = int.tryParse(val) ?? 4;
+                },
+              ),
+              DropdownButtonFormField<String>(
+                value: season,
+                items: const [
+                  DropdownMenuItem(value: 'inSeason', child: Text('In Season')),
+                  DropdownMenuItem(
+                      value: 'outSeason', child: Text('Out Season')),
+                ],
+                onChanged: (val) => season = val ?? 'inSeason',
+                decoration: const InputDecoration(labelText: 'Season'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel')),
+            ElevatedButton(
+                onPressed: () => Navigator.pop(context, {
+                      'weeks': weeks,
+                      'season': season,
+                    }),
+                child: const Text('Generate')),
+          ],
+        );
+      },
+    );
+
+    if (result != null) {
+      final weeks = result['weeks'] as int;
+      final season = result['season'] as String;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Generating training plan...')),
+      );
+
+      if (key == null) {
+        throw Exception("Google Gemini API key not found in .env file");
+      }
+
+      final generator = TrainingPlanGenerator(googleApiKey: key!);
+      final newPlan = await generator.generatePlanFromProfile(
+        widget.profile,
+        weeksDuration: weeks,
+        season: season,
+      );
+
+      if (newPlan != null) {
+        await widget.storage.writeTrainingPlan(newPlan);
+
+        setState(() {
+          sortedPlans.insert(0, newPlan);
+          _expanded[0] = true;
+          _checked[0] = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Training plan created!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to generate plan')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -47,36 +133,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ElevatedButton(
-            onPressed: () async {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Generating training plan...')),
-              );
-              if (key == null) {
-                throw Exception("OpenAI API key not found in .env file");
-              }
-              final generator = TrainingPlanGenerator(googleApiKey: key!);
-              final newPlan = await generator.generatePlanFromProfile(
-                  widget.profile); // <-- use passed-in profile
-
-              if (newPlan != null) {
-                await widget.storage.writeTrainingPlan(newPlan);
-
-                setState(() {
-                  // Refresh the plans list
-                  sortedPlans.insert(0, newPlan); // Add new plan at top
-                  _expanded[0] = true;
-                  _checked[0] = false;
-                });
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Training plan created!')),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Failed to generate plan')),
-                );
-              }
-            },
+            onPressed: _handleNewPlanGeneration,
             child: const Text('New Plan'),
           ),
           const SizedBox(height: 16),
