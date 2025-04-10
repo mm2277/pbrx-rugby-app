@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/training_plan.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
+import 'package:pbrx_rugby_app/models/training_plan_generator.dart';
 
 class TrainingPlanCard extends StatefulWidget {
   final List<TrainingPlan> trainingPlans;
   final StoreDataLocally storage;
+  final Profile profile;
 
   const TrainingPlanCard({
     super.key,
     required this.trainingPlans,
     required this.storage,
+    required this.profile,
   });
 
   @override
@@ -41,7 +45,35 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () async {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Generating training plan...')),
+              );
+
+              final generator =
+                  TrainingPlanGenerator(openAiKey: 'YOUR_API_KEY_HERE');
+              final newPlan = await generator.generatePlanFromProfile(
+                  widget.profile); // <-- use passed-in profile
+
+              if (newPlan != null) {
+                await widget.storage.writeTrainingPlan(newPlan);
+
+                setState(() {
+                  // Refresh the plans list
+                  sortedPlans.insert(0, newPlan); // Add new plan at top
+                  _expanded[0] = true;
+                  _checked[0] = false;
+                });
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Training plan created!')),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Failed to generate plan')),
+                );
+              }
+            },
             child: const Text('New Plan'),
           ),
           const SizedBox(height: 16),
