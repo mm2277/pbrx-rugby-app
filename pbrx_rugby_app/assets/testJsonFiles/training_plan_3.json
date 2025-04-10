@@ -1,0 +1,30 @@
+{
+    "weeksDuration": 2,
+    "season": "inSeason",
+    "dateCreated": "2025-04-01T18:45:00.000Z",
+    "weeklyPlans": [
+      {
+        "days": [
+          [],
+          [],
+          [
+            {
+              "durationMins": 30,
+              "type": "cardio",
+              "warmup": [
+                { "name": "High Knees", "reps": 20, "sets": 2 }
+              ],
+              "mainWorkout": [
+                { "name": "Treadmill Run", "reps": 0, "sets": 1, "description": "Run 3km at moderate pace" }
+              ]
+            }
+          ],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  }
+  

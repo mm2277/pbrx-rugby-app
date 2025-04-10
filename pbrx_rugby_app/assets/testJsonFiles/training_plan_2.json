@@ -1,0 +1,31 @@
+{
+    "weeksDuration": 6,
+    "season": "outSeason",
+    "dateCreated": "2025-03-25T14:00:00.000Z",
+    "weeklyPlans": [
+      {
+        "days": [
+          [],
+          [
+            {
+              "durationMins": 60,
+              "type": "weights",
+              "warmup": [
+                { "name": "Arm Circles", "reps": 20, "sets": 1 }
+              ],
+              "mainWorkout": [
+                { "name": "Bench Press", "reps": 8, "sets": 4 },
+                { "name": "Deadlift", "reps": 5, "sets": 3 }
+              ]
+            }
+          ],
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
+      }
+    ]
+  }
+  
