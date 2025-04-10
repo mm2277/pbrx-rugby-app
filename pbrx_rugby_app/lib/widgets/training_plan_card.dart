@@ -203,22 +203,52 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                       plan.weeklyPlans[weekIndex].days[day]
                                           .length;
                                   session++) ...[
+                                const SizedBox(height: 12),
                                 Text(
-                                  'Day ${day + 1}, Session ${session + 1}:',
+                                  'Day ${day + 1}',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                Text(
+                                  'Session ${session + 1}: ${plan.weeklyPlans[weekIndex].days[day][session].type.name}',
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                const Text(
+                                  'Warm-Up:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 12.0),
+                                  padding: const EdgeInsets.only(left: 12),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                          'Warmup: ${plan.weeklyPlans[weekIndex].days[day][session].warmup.map((e) => '${e.name} (${e.sets}x${e.reps})').join(', ')}'),
-                                      Text(
-                                          'Workout: ${plan.weeklyPlans[weekIndex].days[day][session].mainWorkout.map((e) => '${e.name} (${e.sets}x${e.reps})').join(', ')}'),
-                                    ],
+                                    children: plan.weeklyPlans[weekIndex]
+                                        .days[day][session].warmup
+                                        .map((exercise) {
+                                      return Text(
+                                          '• ${exercise.name} (${exercise.sets}x${exercise.reps})');
+                                    }).toList(),
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                const Text(
+                                  'Workout:',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: plan.weeklyPlans[weekIndex]
+                                        .days[day][session].mainWorkout
+                                        .map((exercise) {
+                                      return Text(
+                                          '• ${exercise.name} (${exercise.sets}x${exercise.reps})');
+                                    }).toList(),
                                   ),
                                 ),
                               ],
