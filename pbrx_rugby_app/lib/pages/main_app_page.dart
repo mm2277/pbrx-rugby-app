@@ -60,6 +60,7 @@ class _MainAppPageState extends State<MainAppPage> {
               return TrainingPlanCard(
                 trainingPlans: allPlans,
                 storage: StoreDataLocally(),
+                profile: widget.profile,
               );
             }
           },

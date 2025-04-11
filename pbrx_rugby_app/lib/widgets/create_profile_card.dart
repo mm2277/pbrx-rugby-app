@@ -199,9 +199,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => MainAppPage(
-                        profile: _profile ??
-                            Profile(
-                                name: "", position: Position.back, skills: []),
+                        profile: _profile,
                       ),
                     ),
                   );

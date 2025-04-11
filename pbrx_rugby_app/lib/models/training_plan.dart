@@ -10,19 +10,6 @@ enum Season {
       Season.values.firstWhere((e) => e.name == json);
 }
 
-enum SessionType {
-  hiit,
-  cardio,
-  weights,
-  mobility,
-  recovery;
-
-  String toJson() => name;
-
-  static SessionType fromJson(String json) =>
-      SessionType.values.firstWhere((e) => e.name == json);
-}
-
 class TrainingPlan {
   final int weeksDuration;
   final Season season;
