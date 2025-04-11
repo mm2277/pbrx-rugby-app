@@ -113,10 +113,18 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     );
 
     if (newPlan != null) {
-      await widget.storage.writeTrainingPlan(newPlan);
+      // Override the dateCreated with the current date
+      final updatedPlan = TrainingPlan(
+        weeksDuration: newPlan.weeksDuration,
+        season: newPlan.season,
+        weeklyPlans: newPlan.weeklyPlans,
+        dateCreated: DateTime.now(), // ⏱ Set to now
+      );
+
+      await widget.storage.writeTrainingPlan(updatedPlan);
 
       setState(() {
-        sortedPlans.insert(0, newPlan);
+        sortedPlans.insert(0, updatedPlan);
         _expanded.clear();
         _checked.clear();
         for (int i = 0; i < sortedPlans.length; i++) {
