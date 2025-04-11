@@ -57,8 +57,14 @@ class TrainingPlanGenerator {
             .join('\n')
             .trim();
 
-        final jsonMap = jsonDecode(cleanedJsonString);
-        return TrainingPlan.fromJson(jsonMap);
+        try {
+          final jsonMap = jsonDecode(cleanedJsonString);
+          return TrainingPlan.fromJson(jsonMap);
+        } catch (e) {
+          print("Failed to parse plan JSON: $e");
+          print("Raw JSON:\n$cleanedJsonString");
+          return null;
+        }
       }
     }
 
@@ -193,6 +199,8 @@ Each exercise must be a full object:
 Do NOT use strings in warmup or mainWorkout. No explanations or markdown. Respond ONLY with valid, clean JSON.
 DO NOT LEAVE ANY STRING UNTERMINATED
 ALWAYS MAKE SURE THERE ARE ONLY 7 DAYS IN A WEEK
+Make sure the JSON is completely valid with all brackets, commas, and quotes closed. Do not leave the response incomplete or cut off at the end.
+
 ''';
   }
 }
