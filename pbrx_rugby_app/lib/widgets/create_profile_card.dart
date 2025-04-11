@@ -109,6 +109,45 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
           Padding(
             padding: const EdgeInsets.all(15.0),
             child: DropdownButtonFormField(
+              value: _profile.ability,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                label: Text('Select your ability',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      //color: Theme.of(context).colorScheme.primary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    )),
+              ),
+              items: Ability.values.map((p) {
+                return DropdownMenuItem(
+                  value: p,
+                  child: Text(p.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                      )),
+                );
+              }).toList(),
+              onChanged: (value) {
+                _profile.setAbility(value!);
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Please select an ability';
+                }
+                return null;
+              },
+            ),
+          ),
+
+          //Dropdown menu for positions
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: DropdownButtonFormField(
               value: _profile.position,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
@@ -137,7 +176,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
               },
               validator: (value) {
                 if (value == null) {
-                  return 'Please select a value';
+                  return 'Please select a position';
                 }
                 return null;
               },

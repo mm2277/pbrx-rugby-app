@@ -52,6 +52,17 @@ class _ProfileCardState extends State<ProfileCard> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
+                "Ability",
+              ),
+              Text(widget.profile.safeAbility)
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
                 "Position",
               ),
               Text(widget.profile.safePosition)
