@@ -28,6 +28,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
   late List<TrainingPlan> sortedPlans;
   final Map<int, bool> _expanded = {};
   final Map<int, bool> _checked = {};
+  //hidden from the gitHub server for security
   final key = dotenv.env['GOOGLE_GEMINI_API_KEY'];
 
   @override
@@ -36,8 +37,8 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     sortedPlans = List.from(widget.trainingPlans)
       ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
     for (int i = 0; i < sortedPlans.length; i++) {
-      _expanded[i] = i == 0; // Current plan expanded by default
-      _checked[i] = false;
+      _expanded[i] = i == 0;
+      _checked[i] = sortedPlans[i].isCompleted;
     }
   }
 
@@ -115,11 +116,12 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     if (newPlan != null) {
       // Override the dateCreated with the current date
       final updatedPlan = TrainingPlan(
-        weeksDuration: newPlan.weeksDuration,
-        season: newPlan.season,
-        weeklyPlans: newPlan.weeklyPlans,
-        dateCreated: DateTime.now(), // ⏱ Set to now
-      );
+          weeksDuration: newPlan.weeksDuration,
+          season: newPlan.season,
+          weeklyPlans: newPlan.weeklyPlans,
+          dateCreated: DateTime.now(), // Set to now
+          completed: false //auto set to false
+          );
 
       await widget.storage.writeTrainingPlan(updatedPlan);
 
@@ -129,7 +131,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         _checked.clear();
         for (int i = 0; i < sortedPlans.length; i++) {
           _expanded[i] = i == 0;
-          _checked[i] = false;
+          _checked[i] = sortedPlans[i].isCompleted;
         }
       });
 
@@ -181,8 +183,17 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                             Checkbox(
                               value:
                                   _checked[index] ?? false, // fallback to false
-                              onChanged: (val) => setState(
-                                  () => _checked[index] = val ?? false),
+                              onChanged: (val) async {
+                                final checked = val ?? false;
+
+                                setState(() {
+                                  _checked[index] = checked;
+                                  sortedPlans[index].setCompleted(checked);
+                                });
+
+                                await widget.storage
+                                    .writeTrainingPlan(sortedPlans[index]);
+                              },
                             ),
                             IconButton(
                                 icon: Icon(_expanded[index] == true

@@ -42,7 +42,6 @@ class TrainingPlanGenerator {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data);
       final jsonString =
           data['candidates']?[0]?['content']?['parts']?[0]?['text'];
 
@@ -58,8 +57,14 @@ class TrainingPlanGenerator {
             .join('\n')
             .trim();
 
-        final jsonMap = jsonDecode(cleanedJsonString);
-        return TrainingPlan.fromJson(jsonMap);
+        try {
+          final jsonMap = jsonDecode(cleanedJsonString);
+          return TrainingPlan.fromJson(jsonMap);
+        } catch (e) {
+          print("Failed to parse plan JSON: $e");
+          print("Raw JSON:\n$cleanedJsonString");
+          return null;
+        }
       }
     }
 
@@ -73,13 +78,21 @@ class TrainingPlanGenerator {
     final skillsList = profile.skills?.map((s) => s.name).join(', ') ?? 'None';
     final playerName =
         profile.name?.isNotEmpty == true ? profile.name : 'Unnamed Player';
+    final ability = profile.ability?.name ?? 'Unknown';
 
     return '''
 You are a personal training for a rugby player, generate a training plan for a player with these attributes: 
 - Name: $playerName
+- Ability: $ability
 - Position: $positionName
 - Skills: $skillsList
 - Season: $season
+
+When thinking of the training plan consider:
+- the season where in-season should have more training than out-season,
+- the ability of the player, beginners can often take less training load than advanced
+- player position backs tend to have more running and sprint training and forwards having more strength and power
+- skills make sure each skill is getting trained enough
 
 The training plan must be  $weeks weeks long and follow this JSON structure:
 {
@@ -186,6 +199,8 @@ Each exercise must be a full object:
 Do NOT use strings in warmup or mainWorkout. No explanations or markdown. Respond ONLY with valid, clean JSON.
 DO NOT LEAVE ANY STRING UNTERMINATED
 ALWAYS MAKE SURE THERE ARE ONLY 7 DAYS IN A WEEK
+Make sure the JSON is completely valid with all brackets, commas, and quotes closed. Do not leave the response incomplete or cut off at the end.
+
 ''';
   }
 }
