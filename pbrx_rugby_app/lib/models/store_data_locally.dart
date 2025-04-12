@@ -1,50 +1,50 @@
 import 'dart:convert';
-
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/training_plan.dart';
 
+//Handles local storage of user data including profile and training plans.
+//Uses file system operations to persist data across app launches 
 class StoreDataLocally {
+  /// Returns the path to the apps local documents directory 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-
     return directory.path;
   }
 
+  //Gets the file reference for the profile file (profile.txt)
   Future<File> get _profileFile async {
     final path = await _localPath;
     return File('$path/profile.txt');
   }
 
+  // Saves the users profile as a string to local storage 
   Future<File> writeProfile(Profile profile) async {
     final file = await _profileFile;
-
-    // Write the file
-    return file.writeAsString(profile.toString());
+    return file.writeAsString(profile.toString()); 
   }
 
+  // Reads the saved profile string from local storage. 
   Future<String> readProfile() async {
     try {
       final file = await _profileFile;
-
-      // Read the file
       final contents = await file.readAsString();
-
       return contents;
     } catch (e) {
-      // If encountering an error, return 0
+      // Return default string, if read fails 
       return "N/A";
     }
   }
 
+  //checks whether the profile file exists in local storage
   Future<bool> checkIfProfileFileExists() async {
     final file = await _profileFile;
-
     return await file.exists();
   }
 
+  /// Deletes the profile file from local storage if it exists
   Future<void> deleteFile() async {
     final file = await _profileFile;
     bool fileExists = await checkIfProfileFileExists();
@@ -61,12 +61,17 @@ class StoreDataLocally {
     }
   }
 
+  // -------------------------------
   // TRAINING PLAN FILE METHODS (JSON)
+  // -------------------------------
+
+  /// Gets the default training plan file (used in readTrainingPlan, trainingPlanExists)
   Future<File> get _trainingPlanFile async {
     final path = await _localPath;
     return File('$path/training_plan.json');
   }
 
+  /// Saves a training plan as a JSON file named with its creation timestamp 
   Future<File> writeTrainingPlan(TrainingPlan plan) async {
     final path = await _localPath;
     final timestamp = plan.dateCreated.toIso8601String();
@@ -75,6 +80,7 @@ class StoreDataLocally {
     return file.writeAsString(jsonString);
   }
 
+  /// Reads the default training plan JSON file and returns a training Plan object 
   Future<TrainingPlan?> readTrainingPlan() async {
     try {
       final file = await _trainingPlanFile;
@@ -87,11 +93,13 @@ class StoreDataLocally {
     }
   }
 
+  /// Checks whether the default training plan file exists
   Future<bool> trainingPlanExists() async {
     final file = await _trainingPlanFile;
     return await file.exists();
   }
 
+  //Deletes the default training plan file (training_plan.json) if it exists
   Future<void> deleteTrainingPlanFile() async {
     final file = await _trainingPlanFile;
     if (await file.exists()) {
@@ -99,13 +107,16 @@ class StoreDataLocally {
     }
   }
 
+  ///Re-ads all saved training plans from local storage (training_plan_*.json files),
+  // sorts them by creation date 
   Future<List<TrainingPlan>> getAllTrainingPlans() async {
     final dir = await getApplicationDocumentsDirectory();
-    final files = dir.listSync();
+    final files = dir.listSync(); // List all files in the directory
 
     List<TrainingPlan> plans = [];
 
     for (var file in files) {
+      // Match only training plan files
       if (file is File &&
           file.path.endsWith('.json') &&
           file.path.contains('training_plan_')) {
@@ -120,7 +131,7 @@ class StoreDataLocally {
       }
     }
 
-    // Sort by dateCreated (newest first)
+    // Sort training plans by dateCreated in descending order where most recent is first
     plans.sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
 
     return plans;

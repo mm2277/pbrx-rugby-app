@@ -8,6 +8,7 @@ import 'package:pbrx_rugby_app/models/training_plan.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/models/training_plan_generator.dart';
 
+///Widget that displays and manages training plans for a given profile.
 class TrainingPlanCard extends StatefulWidget {
   final List<TrainingPlan> trainingPlans;
   final StoreDataLocally storage;
@@ -26,23 +27,23 @@ class TrainingPlanCard extends StatefulWidget {
 
 class _TrainingPlanCardState extends State<TrainingPlanCard> {
   late List<TrainingPlan> sortedPlans;
-  final Map<int, bool> _expanded = {};
-  final Map<int, bool> _checked = {};
-  final key = dotenv.env['GOOGLE_GEMINI_API_KEY'];
+  final Map<int, bool> _expanded = {}; // track all expanedd or not expanded states
+  final Map<int, bool> _checked = {}; // track completion states
+  final key = dotenv.env['GOOGLE_GEMINI_API_KEY']; // AI API key
 
-  //initialsing values on first load
+  /// init and sort training plans on widget load
   @override
   void initState() {
     super.initState();
     sortedPlans = List.from(widget.trainingPlans)
       ..sort((a, b) => b.dateCreated.compareTo(a.dateCreated));
     for (int i = 0; i < sortedPlans.length; i++) {
-      _expanded[i] = i == 0;
+      _expanded[i] = i == 0; //expand the most recent plan
       _checked[i] = sortedPlans[i].isCompleted;
     }
   }
 
-  //message to user to ask for duration and season of the training, parse this to generate plan
+  ///shows dialog to collect new plan settings for duration and saeson
   Future<void> _handleNewPlanGeneration() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -55,12 +56,14 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // duration input
               TextField(
                 decoration:
                     const InputDecoration(labelText: 'Duration (weeks)'),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => weeks = int.tryParse(val) ?? 4,
               ),
+              // season selection
               DropdownButtonFormField<String>(
                 value: season,
                 items: const [
@@ -75,8 +78,9 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel')),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
             ElevatedButton(
               onPressed: () =>
                   Navigator.pop(context, {'weeks': weeks, 'season': season}),
@@ -90,7 +94,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     await _generatePlan(result);
   }
 
-  //Generating a new plan and setting the state to reflect in UI
+  //generates a new plan 
   Future<void> _generatePlan(Map<String, dynamic>? result) async {
     if (result == null || key == null) return;
 
@@ -129,7 +133,6 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         }
       });
 
-      //output messages to the user
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Training plan created!')),
       );
@@ -140,7 +143,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     }
   }
 
-  //widget to build Exercise list
+  // Builds a list of exercises for warm-up OR main-workout
   Widget _buildExerciseList(List exercises) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,8 +152,9 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-                child: Text(
-                    '• ${exercise.name}: ${exercise.sets} sets of ${exercise.reps} reps')),
+              child: Text(
+                  '• ${exercise.name}: ${exercise.sets} sets of ${exercise.reps} reps'),
+            ),
             if (exercise.description?.isNotEmpty == true)
               Tooltip(
                 message: exercise.description!,
@@ -162,7 +166,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     );
   }
 
-  //widget to build training plan
+  // Builds the full view for each weekly plan including exercises
   Widget _buildPlanDetails(TrainingPlan plan) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,6 +175,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Week title
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Text(
@@ -182,6 +187,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                 ),
               ),
             ),
+            // daily sessions
             for (int day = 0; day < 7; day++)
               for (int session = 0;
                   session < week.days[day].length;
@@ -223,6 +229,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     );
   }
 
+  // Builds the complete widget
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -230,11 +237,14 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // generate new plan button
           ElevatedButton(
             onPressed: _handleNewPlanGeneration,
             child: const Text('New Plan'),
           ),
           const SizedBox(height: 16),
+
+          // training Plan cards list
           Expanded(
             child: ListView.builder(
               itemCount: sortedPlans.length,
@@ -251,6 +261,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // title + checkbox + expand
                         Row(
                           children: [
                             Text(
@@ -281,10 +292,13 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                             ),
                           ],
                         ),
+
+                        // expand details
                         if (_expanded[index] == true) ...[
                           const Divider(),
                           _buildPlanDetails(plan),
                           const SizedBox(height: 8),
+                          //butons for regenerate and delete
                           Row(
                             children: [
                               ElevatedButton(
@@ -310,6 +324,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                               ),
                             ],
                           ),
+                          // date created
                           Text('Date Created: $formattedDate',
                               style: const TextStyle(fontSize: 12)),
                         ],

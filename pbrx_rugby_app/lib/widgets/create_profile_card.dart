@@ -5,10 +5,12 @@ import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/pages/main_app_page.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
+// card widget for creating or editing a user profile
+// includes inputs for name, ability, position, and skills
 class CreateProfileCard extends StatefulWidget {
-  final StoreDataLocally storage;
-  final Profile? existingProfile;
-  final String title;
+  final StoreDataLocally storage; // handles saving the profile
+  final Profile? existingProfile; 
+  final String title; 
 
   const CreateProfileCard({
     super.key,
@@ -22,47 +24,56 @@ class CreateProfileCard extends StatefulWidget {
 }
 
 class _CreateProfileCardState extends State<CreateProfileCard> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); // Key to validate form
 
   final _nameController = TextEditingController();
-  List<Skills> _selectedSkills = [];
-  late List<DropdownItem<Skills>> _dropdownItems;
-  late Profile _profile;
+  List<Skills> _selectedSkills = []; 
+  late List<DropdownItem<Skills>> _dropdownItems; 
+  late Profile _profile; 
 
-  final EdgeInsets _fieldPadding = const EdgeInsets.all(15.0);
-  final TextStyle _labelStyle =
-      const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
+  final EdgeInsets _fieldPadding =
+      const EdgeInsets.all(15.0); 
+  final TextStyle _labelStyle = const TextStyle(
+    // Label styling
+    fontSize: 15,
+    fontWeight: FontWeight.bold,
+  );
 
   @override
   void initState() {
     super.initState();
 
+    // use existing profile if editing otherwise create a blank 
     _profile = widget.existingProfile ??
         Profile(name: "", position: Position.back, skills: []);
+
+    // pre-fill name field.
     _nameController.text = _profile.safeName;
 
+    // dropdown items for skills from enum
     _dropdownItems = Skills.values
         .map((s) => DropdownItem<Skills>(value: s, label: s.name))
         .toList();
 
+    // Pre-select skills if editing
     _selectedSkills = _profile.safeSkillsList;
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _nameController.dispose(); 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: _formKey, // form validation key
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Header
+          // title 
           Text(
             widget.title,
             textAlign: TextAlign.center,
@@ -73,7 +84,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          // Name Input
+          //name Input Field.
           Padding(
             padding: _fieldPadding,
             child: TextFormField(
@@ -91,7 +102,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          // Ability Dropdown
+          // ability dropdown field
           Padding(
             padding: _fieldPadding,
             child: DropdownButtonFormField<Ability>(
@@ -121,7 +132,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          // Position Dropdown
+          // Position Dropdown field.
           Padding(
             padding: _fieldPadding,
             child: DropdownButtonFormField<Position>(
@@ -151,39 +162,40 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          // Skills MultiDropdown
+          // Skills multi-select Dropdown 
           Padding(
-              padding: _fieldPadding,
-              child: MultiSelectDialogField<Skills>(
-                items: _dropdownItems
-                    .map((item) =>
-                        MultiSelectItem<Skills>(item.value, item.label))
-                    .toList(),
-                initialValue: _selectedSkills,
-                title: const Text("Skills"),
-                selectedColor: Theme.of(context).colorScheme.primary,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(5),
+            padding: _fieldPadding,
+            child: MultiSelectDialogField<Skills>(
+              items: _dropdownItems
+                  .map(
+                      (item) => MultiSelectItem<Skills>(item.value, item.label))
+                  .toList(),
+              initialValue: _selectedSkills,
+              title: const Text("Skills"),
+              selectedColor: Theme.of(context).colorScheme.primary,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              buttonIcon: const Icon(Icons.arrow_drop_down),
+              buttonText: Text(
+                "Select your skills",
+                style: _labelStyle.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                 ),
-                buttonIcon: const Icon(Icons.arrow_drop_down),
-                buttonText: Text(
-                  "Select your skills",
-                  style: _labelStyle.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-                onConfirm: (selected) {
-                  _selectedSkills = selected;
-                },
-                chipDisplay: MultiSelectChipDisplay(
-                  textStyle: const TextStyle(fontSize: 14),
-                  chipColor:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
-                ),
-              )),
+              ),
+              onConfirm: (selected) {
+                _selectedSkills = selected;
+              },
+              chipDisplay: MultiSelectChipDisplay(
+                textStyle: const TextStyle(fontSize: 14),
+                chipColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              ),
+            ),
+          ),
 
-          // Submit Button
+          // done Button
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: ElevatedButton(
@@ -196,18 +208,24 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
     );
   }
 
+  /// Handles submission of the form
   void _handleSubmit() {
+    // Validate form before saving
     if (_formKey.currentState!.validate()) {
       setState(() {
         _profile.setName(_nameController.text);
         _profile.setSkills(_selectedSkills);
       });
 
+      // Save profile to local storage
       widget.storage.writeProfile(_profile);
+
+      // Confirmation message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Saving Profile')),
       );
 
+      // Navigate to main app page with saved profile
       Navigator.push(
         context,
         MaterialPageRoute(
