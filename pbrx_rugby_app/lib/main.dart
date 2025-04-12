@@ -11,14 +11,13 @@ void main() async {
 
   final storage = StoreDataLocally();
   //this is here fore testing
-  //storage.deleteFile();
+  storage.deleteFile();
   late Profile profile;
 
   try {
     await dotenv.load(fileName: "assets/envFiles/testEnvironmentFile.env");
   } on FileNotFoundError catch (e) {
     print("testEnvironmentFile.env file not found: $e");
-    // Optionally: exit the app, show a dialog, or provide fallback
   } catch (e) {
     print("Unexpected error loading testEnvironmentFile.env: $e");
   }
@@ -36,7 +35,7 @@ void main() async {
       fileExists = false;
     }
   } else {
-    profile = Profile(name: "", position: Position.back, skills: []);
+    profile = Profile(name: "", position: null, skills: []);
   }
 
   runApp(MyApp(

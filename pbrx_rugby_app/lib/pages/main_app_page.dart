@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/models/training_plan.dart';
@@ -45,6 +42,7 @@ class _MainAppPageState extends State<MainAppPage> {
             ? CreateProfileCard(
                 storage: StoreDataLocally(),
                 existingProfile: widget.profile,
+                title: "Edit Profile",
               ) // or pass your storage instance
             : ProfileCard(profile: widget.profile, onEdit: toggleEditMode);
       case 1:

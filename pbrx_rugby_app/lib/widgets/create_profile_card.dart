@@ -3,15 +3,18 @@ import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/pages/main_app_page.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class CreateProfileCard extends StatefulWidget {
   final StoreDataLocally storage;
   final Profile? existingProfile;
+  final String title;
 
   const CreateProfileCard({
     super.key,
     required this.storage,
     this.existingProfile,
+    required this.title,
   });
 
   @override
@@ -21,41 +24,35 @@ class CreateProfileCard extends StatefulWidget {
 class _CreateProfileCardState extends State<CreateProfileCard> {
   final _formKey = GlobalKey<FormState>();
 
-  //input controllers
   final _nameController = TextEditingController();
   final MultiSelectController<Skills> _skillController =
       MultiSelectController<Skills>();
-  List<DropdownItem<Skills>> _dropdownItems = [];
-
-  //final varibales to temporarily move data
+  late List<DropdownItem<Skills>> _dropdownItems;
   late Profile _profile;
+
+  final EdgeInsets _fieldPadding = const EdgeInsets.all(15.0);
+  final TextStyle _labelStyle =
+      const TextStyle(fontSize: 15, fontWeight: FontWeight.bold);
 
   @override
   void initState() {
     super.initState();
 
-    // Use existing profile if passed in
     _profile = widget.existingProfile ??
         Profile(name: "", position: Position.back, skills: []);
-
     _nameController.text = _profile.safeName;
 
-    // Build dropdown items
     _dropdownItems = Skills.values
         .map((s) => DropdownItem<Skills>(value: s, label: s.name))
         .toList();
 
-    // Set items on controller
     _skillController.setItems(_dropdownItems);
-
-    // 💥 Select items AFTER setting them
     _skillController
         .selectWhere((item) => _profile.safeSkillsList.contains(item.value));
   }
 
   @override
   void dispose() {
-    // Clean up the controllers when the widget is disposed.
     _skillController.dispose();
     _nameController.dispose();
     super.dispose();
@@ -67,11 +64,11 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
       key: _formKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Header
           Text(
-            "Create your profile below",
+            widget.title,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.primary,
@@ -80,22 +77,15 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          //Textbox feild for name
+          // Name Input
           Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: _fieldPadding,
             child: TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('Enter your name',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      //color: Theme.of(context).colorScheme.primary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    )),
-              ),
               controller: _nameController,
-              // The validator receives the text that the user has entered.
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: Text('Enter your name', style: _labelStyle),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter some text';
@@ -105,150 +95,131 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          //Dropdown menu for positions
+          // Ability Dropdown
           Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: DropdownButtonFormField(
+            padding: _fieldPadding,
+            child: DropdownButtonFormField<Ability>(
               value: _profile.ability,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('Select your ability',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      //color: Theme.of(context).colorScheme.primary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    )),
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: Text('Select your ability', style: _labelStyle),
               ),
-              items: Ability.values.map((p) {
+              items: Ability.values.map((ability) {
                 return DropdownMenuItem(
-                  value: p,
-                  child: Text(p.name,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      )),
+                  value: ability,
+                  child: Text(
+                    ability.name,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
                 _profile.setAbility(value!);
               },
-              validator: (value) {
-                if (value == null) {
-                  return 'Please select an ability';
-                }
-                return null;
-              },
+              validator: (value) =>
+                  value == null ? 'Please select an ability' : null,
             ),
           ),
 
-          //Dropdown menu for positions
+          // Position Dropdown
           Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: DropdownButtonFormField(
-              value: _profile.position,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                label: Text('Select your position',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      //color: Theme.of(context).colorScheme.primary,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    )),
+            padding: _fieldPadding,
+            child: DropdownButtonFormField<Position>(
+              value: widget.existingProfile != null ? _profile.position : null,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                label: Text('Select your position', style: _labelStyle),
               ),
-              items: Position.values.map((p) {
+              items: Position.values.map((position) {
                 return DropdownMenuItem(
-                  value: p,
-                  child: Text(p.name,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                      )),
+                  value: position,
+                  child: Text(
+                    position.name,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
                 _profile.setPosition(value!);
               },
-              validator: (value) {
-                if (value == null) {
-                  return 'Please select a position';
-                }
-                return null;
-              },
+              validator: (value) =>
+                  value == null ? 'Please select a position' : null,
             ),
           ),
 
-          //multiselect box for skills
+          // Skills MultiDropdown
           Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: MultiDropdown(
-              controller: _skillController,
-              fieldDecoration: FieldDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: "Select your skills",
-                  labelStyle: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                  )),
-              chipDecoration: ChipDecoration(),
-              dropdownItemDecoration: DropdownItemDecoration(
-                textColor: Theme.of(context).colorScheme.secondary,
-                //backgroundColor: Theme.of(context).colorScheme.primary,
+            padding: _fieldPadding,
+            child: MultiSelectDialogField<Skills>(
+              items: _dropdownItems
+                  .map(
+                      (item) => MultiSelectItem<Skills>(item.value, item.label))
+                  .toList(),
+              initialValue: _profile.safeSkillsList,
+              title: const Text("Skills"),
+              selectedColor: Theme.of(context).colorScheme.primary,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5),
               ),
-              items: Skills.values.map((p) {
-                return DropdownItem(value: p, label: p.name);
-              }).toList(),
+              buttonIcon: const Icon(Icons.arrow_drop_down),
+              buttonText: Text(
+                "Select your skills",
+                style: _labelStyle.copyWith(
+                    color: Theme.of(context).colorScheme.primary),
+              ),
+              onConfirm: (selected) {
+                _profile.setSkills(selected);
+              },
+              chipDisplay: MultiSelectChipDisplay(
+                textStyle: const TextStyle(fontSize: 14),
+                chipColor:
+                    Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              ),
             ),
           ),
 
-          //Creating Profile Button
+          // Submit Button
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: ElevatedButton(
-              onPressed: () {
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar.
-                  setState(() {
-                    _profile.setName(_nameController.text);
-                    //_profile.setPosition(_positionSelected);
-                    _profile.setSkills(_skillController.selectedItems
-                        .map((item) => item.value)
-                        .toList());
-                  });
-
-                  //saving data to storage
-                  widget.storage.writeProfile(_profile);
-                  //this read is only for testing purposes
-                  widget.storage.readProfile().then((value) {
-                    print(value);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Creating Profile')),
-                  );
-
-                  //navigating to home page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MainAppPage(
-                        profile: _profile,
-                      ),
-                    ),
-                  );
-                }
-              },
-              child: const Text('Create Profile'),
+              onPressed: _handleSubmit,
+              child: const Text('Done'),
             ),
           ),
         ],
       ),
     );
+  }
+
+  void _handleSubmit() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _profile.setName(_nameController.text);
+        _profile.setSkills(
+          _skillController.selectedItems.map((item) => item.value).toList(),
+        );
+      });
+
+      widget.storage.writeProfile(_profile);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Saving Profile')),
+      );
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainAppPage(profile: _profile),
+        ),
+      );
+    }
   }
 }

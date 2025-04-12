@@ -18,7 +18,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     OnboardingCard(
       image: "assets/images/Welcome_Onboarding_Sign.png",
       title: "Welcome to the Rugby App",
-      description: "This is the new description for the page",
+      description:
+          "Whether you're a seasoned athlete or just starting out, this application is here to support your rugby journey. Build your player profile and get training plans tailored to your position, ability and skills",
       buttonText: "Next",
       onPressed: () {
         _pageController.animateToPage(1,
@@ -28,14 +29,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
     OnboardingCard(
       image: "assets/images/Onboarding_2.png",
       title: "What happens now?",
-      description: "We will take some data from you and based on that data",
+      description:
+          "Let’s get you set up. You’ll start by creating your profile — add your name, select your abilty, select your position, and highlight your skills. From there, the application will guide you with personalized training plans to help you grow and perform at your best.",
       buttonText: "Next",
       onPressed: () {
         _pageController.animateToPage(2,
             duration: Durations.long1, curve: Curves.linear);
       },
     ),
-    CreateProfileCard(storage: StoreDataLocally()),
+    CreateProfileCard(
+      storage: StoreDataLocally(),
+      title: "Create your Profile",
+    ),
   ];
   @override
   Widget build(BuildContext context) {

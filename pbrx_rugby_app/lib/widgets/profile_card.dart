@@ -20,66 +20,80 @@ class ProfileCard extends StatefulWidget {
 class _ProfileCardState extends State<ProfileCard> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: MediaQuery.sizeOf(context).height * 0.8,
-      width: MediaQuery.sizeOf(context).width,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.all(50.0),
-            child: Icon(
-              Icons.account_circle_outlined,
-              size: 80,
+    return SizedBox.expand(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: Card(
+          elevation: 3,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  children: [
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey,
+                      child: Icon(Icons.person, size: 60, color: Colors.white),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildProfileItem("Name", widget.profile.safeName),
+                    const Divider(),
+                    _buildProfileItem("Ability", widget.profile.safeAbility),
+                    const Divider(),
+                    _buildProfileItem("Position", widget.profile.safePosition),
+                    const Divider(),
+                    _buildProfileItem("Skills", widget.profile.safeSkills),
+                  ],
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: widget.onEdit,
+                    icon: const Icon(Icons.edit),
+                    label: const Text('Edit Profile'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Name",
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileItem(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              "$label:",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
-              Text(widget.profile.safeName)
-            ],
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Ability",
-              ),
-              Text(widget.profile.safeAbility)
-            ],
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Position",
-              ),
-              Text(widget.profile.safePosition)
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Skills",
-              ),
-              Text(widget.profile.safeSkills)
-            ],
-          ),
-          ElevatedButton(onPressed: widget.onEdit, child: Text('Edit Profile')),
         ],
       ),
     );
