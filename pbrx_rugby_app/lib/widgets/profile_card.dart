@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
-import 'package:pbrx_rugby_app/models/store_data_locally.dart';
-import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 
 /// A widget that displays a user's profile details inside a styled card
 class ProfileCard extends StatefulWidget {
-  final Profile profile; 
-  final VoidCallback onEdit; 
+  final Profile profile;
+  final VoidCallback onEdit;
 
   const ProfileCard({
     super.key,
@@ -55,7 +53,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ],
                 ),
 
-                // edit profile button 
+                // edit profile button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
@@ -96,7 +94,6 @@ class _ProfileCardState extends State<ProfileCard> {
               ),
             ),
           ),
-
 
           Expanded(
             flex: 3,

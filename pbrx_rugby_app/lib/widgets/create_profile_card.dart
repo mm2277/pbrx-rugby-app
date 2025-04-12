@@ -9,8 +9,8 @@ import 'package:multi_select_flutter/multi_select_flutter.dart';
 // includes inputs for name, ability, position, and skills
 class CreateProfileCard extends StatefulWidget {
   final StoreDataLocally storage; // handles saving the profile
-  final Profile? existingProfile; 
-  final String title; 
+  final Profile? existingProfile;
+  final String title;
 
   const CreateProfileCard({
     super.key,
@@ -27,12 +27,11 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
   final _formKey = GlobalKey<FormState>(); // Key to validate form
 
   final _nameController = TextEditingController();
-  List<Skills> _selectedSkills = []; 
-  late List<DropdownItem<Skills>> _dropdownItems; 
-  late Profile _profile; 
+  List<Skills> _selectedSkills = [];
+  late List<DropdownItem<Skills>> _dropdownItems;
+  late Profile _profile;
 
-  final EdgeInsets _fieldPadding =
-      const EdgeInsets.all(15.0); 
+  final EdgeInsets _fieldPadding = const EdgeInsets.all(15.0);
   final TextStyle _labelStyle = const TextStyle(
     // Label styling
     fontSize: 15,
@@ -43,7 +42,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
   void initState() {
     super.initState();
 
-    // use existing profile if editing otherwise create a blank 
+    // use existing profile if editing otherwise create a blank
     _profile = widget.existingProfile ??
         Profile(name: "", position: Position.back, skills: []);
 
@@ -61,7 +60,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
 
   @override
   void dispose() {
-    _nameController.dispose(); 
+    _nameController.dispose();
     super.dispose();
   }
 
@@ -73,7 +72,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // title 
+          // title
           Text(
             widget.title,
             textAlign: TextAlign.center,
@@ -162,7 +161,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
             ),
           ),
 
-          // Skills multi-select Dropdown 
+          // Skills multi-select Dropdown
           Padding(
             padding: _fieldPadding,
             child: MultiSelectDialogField<Skills>(

@@ -6,7 +6,7 @@ import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/training_plan_card.dart';
 
-//Main app page displayed after onboarding unless profile.txt exists 
+//Main app page displayed after onboarding unless profile.txt exists
 //allows navigation between profile and training plan sections
 class MainAppPage extends StatefulWidget {
   final Profile profile; //users profile passed from onboarding or main_page
@@ -44,7 +44,7 @@ class _MainAppPageState extends State<MainAppPage> {
     // choose which page based on selectedIndex
     switch (selectedIndex) {
       case 0:
-        //profile page 
+        //profile page
         page = editing
             ? CreateProfileCard(
                 storage: StoreDataLocally(),
@@ -82,7 +82,7 @@ class _MainAppPageState extends State<MainAppPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('PBRX Rugby'),
+        title: const Text('Rugby App'),
         leading: Builder(
           builder: (context) => IconButton(
             icon: const Icon(Icons.menu),

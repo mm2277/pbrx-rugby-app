@@ -51,7 +51,7 @@ void main() async {
   ));
 }
 
-/// Root widget for the PBRX Rugby App
+/// root widget for the app
 class MyApp extends StatelessWidget {
   const MyApp({super.key, required this.showOnboarding, required this.profile});
 
@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PBRX Rugby App',
+      title: 'Rugby App',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

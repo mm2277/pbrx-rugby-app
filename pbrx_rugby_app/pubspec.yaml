@@ -24,6 +24,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.1
   flutter_test:
     sdk: flutter
 
@@ -39,3 +40,8 @@ flutter:
   - assets/testJsonFiles/training_plan_2.json
   - assets/testJsonFiles/training_plan_3.json
   - assets/envFiles/testEnvironmentFile.env
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"
