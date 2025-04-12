@@ -81,126 +81,78 @@ class TrainingPlanGenerator {
     final ability = profile.ability?.name ?? 'Unknown';
 
     return '''
-You are a personal training for a rugby player, generate a training plan for a player with these attributes: 
-- Name: $playerName
-- Ability: $ability
-- Position: $positionName
-- Skills: $skillsList
+You are a personal trainer specializing in rugby. Generate a realistic, progressive training plan in valid JSON format only for the following player:
+-Name: $playerName
+- Ability Level: $ability (e.g. beginner, intermediate, advanced)
+- Position: $positionName (e.g. back, forward)
+- Key Skills: $skillsList
 - Season: $season
+- Weeks: $weeks
 
-When thinking of the training plan consider:
-- the season where in-season should have more training than out-season,
-- the ability of the player, beginners can often take less training load than advanced
-- player position backs tend to have more running and sprint training and forwards having more strength and power
-- skills make sure each skill is getting trained enough
+Guidelines:
+- Adapt to season: More sessions during in-season; fewer in off-season.
+- Respect ability: Beginners get lighter load; advanced players can handle more.
+-Tailor to position:
+    Backs → more sprinting, agility, conditioning
+    Forwards → more strength, power, tackling
+- Train all skills listed in $skillsList sufficiently.
 
-The training plan must be  $weeks weeks long and follow this JSON structure:
+Requirements:
+- JSON output must follow this structure:
+
 {
   "weeksDuration": $weeks,
-  "season": $season,
-  "dateCreated": (replace with today's date in ISO 8601 format (e.g. "2024-04-10"))
+  "season": "$season",
+  "dateCreated": "YYYY-MM-DD",
   "weeklyPlans": [
     {
       "days": [
         [
           {
-            "durationMins": (estimate the duration for each session),
-            "type": "hiit",
+            "durationMins": 60,
+            "type": "Strength",
             "warmup": [
-              { "name": "Jumping Jacks", "reps": 20, "sets": 2 }
+              {
+                "name": "Jumping Jacks",
+                "sets": 2,
+                "reps": 20,
+                "description": "Full-body warmup to raise heart rate."
+              }
             ],
             "mainWorkout": [
-              { "name": "Burpees", "reps": 10, "sets": 3 }
+              {
+                "name": "Deadlift",
+                "sets": 4,
+                "reps": 6,
+                "description": "Compound strength movement focused on posterior chain."
+              }
             ]
           }
         ],
-        [
-            (fill out day 2, if neccessary)
-        ], 
-        [
-            (fill out day 3, if neccessary)
-        ],         
-        [
-            (fill out day 4, if neccessary)
-        ],        
-        [
-            (fill out day 5, if neccessary)
-        ],        
-        [
-            (fill out day 6, if neccessary)
-        ],        
-        [
-            (fill out day 7, if neccessary)
-        ],
-      ]
-    },
-
-    #week 2
-    {
-      "days": [
-        [
-          {
-            "durationMins": (estimate the duration for each session),
-            "type": "hiit",
-            "warmup": [
-              { "name": "Jumping Jacks", "reps": 20, "sets": 2 }
-            ],
-            "mainWorkout": [
-              { "name": "Burpees", "reps": 10, "sets": 3 }
-            ]
-          }
-        ],
-        [
-            (fill out day 2, if neccessary)
-        ], 
-        [
-            (fill out day 3, if neccessary)
-        ],         
-        [
-            (fill out day 4, if neccessary)
-        ],        
-        [
-            (fill out day 5, if neccessary)
-        ],        
-        [
-            (fill out day 6, if neccessary)
-        ],        
-        [
-            (fill out day 7, if neccessary)
-        ],
+        [], [], [], [], [], []
       ]
     }
-
   ]
 }
+Additional Rules:
+-Each week = 7 days, each day = list of 0 or more sessions
+-Every session must include:
+    durationMins: integer
+    type: e.g., "Strength", "HIIT", "Power", "Conditioning"
+    warmup: list of full exercise objects
+    mainWorkout: list of full exercise objects
+- Each exercise object must include:
+    name, sets, reps, description
+- No strings in place of objects in warmup or mainWorkout
+- No markdown, no explanations — just clean, complete JSON
+- Sessions should vary week to week
+- Minimum 2 sessions per week
+- Minimum of 3 exercises per session
+ -If warmup is missing, default to { "name": "Light Jog", "sets": 1, "reps": 5, "description": "Easy-paced jog to increase core temperature." }
 
-Replace and add things where necessary to fill out the training plan. Ensure that the training plan is 
-realistic and means that the player will improve. There must be atleast 2 sessions a week. There 
-must be a warm up of sorts, if there is not one, just add "Light Jog". Weeks cannot be the same, 
-ensure there is a good variation of exercises and session types. Make sure that the sessions and exercises,
-reps and sets are realistic
-
-Other Requirements:
-- Each week has 7 days, each day is a list of 0 or more sessions
-- Each session is an object that must have:
-  - durationMins: integer
-  - type: the type of the session e.g. Strength training, Continuous Cardio, HIIT, Power and so on
-  - warmup: list of exercise objects that are good for a warm up
-  - mainWorkout: list of exercises objects that match the type 
-
-Each exercise must be a full object:
-{
-  "name": "Push Ups",
-  "sets": 3,
-  "reps": 12
-  "description" : (include a description of the exercise)
-}
-
-Do NOT use strings in warmup or mainWorkout. No explanations or markdown. Respond ONLY with valid, clean JSON.
-DO NOT LEAVE ANY STRING UNTERMINATED
-ALWAYS MAKE SURE THERE ARE ONLY 7 DAYS IN A WEEK
-Make sure the JSON is completely valid with all brackets, commas, and quotes closed. Do not leave the response incomplete or cut off at the end.
-
-''';
+Important:
+- Do not truncate or cut off JSON
+- Always close all quotes, brackets, commas
+- Do not generate any invalid or unterminated strings''';
   }
 }

@@ -25,8 +25,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
-  final MultiSelectController<Skills> _skillController =
-      MultiSelectController<Skills>();
+  List<Skills> _selectedSkills = [];
   late List<DropdownItem<Skills>> _dropdownItems;
   late Profile _profile;
 
@@ -46,14 +45,11 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
         .map((s) => DropdownItem<Skills>(value: s, label: s.name))
         .toList();
 
-    _skillController.setItems(_dropdownItems);
-    _skillController
-        .selectWhere((item) => _profile.safeSkillsList.contains(item.value));
+    _selectedSkills = _profile.safeSkillsList;
   }
 
   @override
   void dispose() {
-    _skillController.dispose();
     _nameController.dispose();
     super.dispose();
   }
@@ -157,35 +153,35 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
 
           // Skills MultiDropdown
           Padding(
-            padding: _fieldPadding,
-            child: MultiSelectDialogField<Skills>(
-              items: _dropdownItems
-                  .map(
-                      (item) => MultiSelectItem<Skills>(item.value, item.label))
-                  .toList(),
-              initialValue: _profile.safeSkillsList,
-              title: const Text("Skills"),
-              selectedColor: Theme.of(context).colorScheme.primary,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              buttonIcon: const Icon(Icons.arrow_drop_down),
-              buttonText: Text(
-                "Select your skills",
-                style: _labelStyle.copyWith(
-                    color: Theme.of(context).colorScheme.primary),
-              ),
-              onConfirm: (selected) {
-                _profile.setSkills(selected);
-              },
-              chipDisplay: MultiSelectChipDisplay(
-                textStyle: const TextStyle(fontSize: 14),
-                chipColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.2),
-              ),
-            ),
-          ),
+              padding: _fieldPadding,
+              child: MultiSelectDialogField<Skills>(
+                items: _dropdownItems
+                    .map((item) =>
+                        MultiSelectItem<Skills>(item.value, item.label))
+                    .toList(),
+                initialValue: _selectedSkills,
+                title: const Text("Skills"),
+                selectedColor: Theme.of(context).colorScheme.primary,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                buttonIcon: const Icon(Icons.arrow_drop_down),
+                buttonText: Text(
+                  "Select your skills",
+                  style: _labelStyle.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+                onConfirm: (selected) {
+                  _selectedSkills = selected;
+                },
+                chipDisplay: MultiSelectChipDisplay(
+                  textStyle: const TextStyle(fontSize: 14),
+                  chipColor:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                ),
+              )),
 
           // Submit Button
           Padding(
@@ -204,9 +200,7 @@ class _CreateProfileCardState extends State<CreateProfileCard> {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _profile.setName(_nameController.text);
-        _profile.setSkills(
-          _skillController.selectedItems.map((item) => item.value).toList(),
-        );
+        _profile.setSkills(_selectedSkills);
       });
 
       widget.storage.writeProfile(_profile);
