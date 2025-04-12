@@ -30,6 +30,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
   final Map<int, bool> _checked = {};
   final key = dotenv.env['GOOGLE_GEMINI_API_KEY'];
 
+  //initialsing values on first load
   @override
   void initState() {
     super.initState();
@@ -41,6 +42,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     }
   }
 
+  //message to user to ask for duration and season of the training, parse this to generate plan
   Future<void> _handleNewPlanGeneration() async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
@@ -54,7 +56,8 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                decoration: const InputDecoration(labelText: 'Duration (weeks)'),
+                decoration:
+                    const InputDecoration(labelText: 'Duration (weeks)'),
                 keyboardType: TextInputType.number,
                 onChanged: (val) => weeks = int.tryParse(val) ?? 4,
               ),
@@ -62,7 +65,8 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                 value: season,
                 items: const [
                   DropdownMenuItem(value: 'inSeason', child: Text('In Season')),
-                  DropdownMenuItem(value: 'outSeason', child: Text('Out Season')),
+                  DropdownMenuItem(
+                      value: 'outSeason', child: Text('Out Season')),
                 ],
                 onChanged: (val) => season = val ?? 'inSeason',
                 decoration: const InputDecoration(labelText: 'Season'),
@@ -70,9 +74,12 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel')),
             ElevatedButton(
-              onPressed: () => Navigator.pop(context, {'weeks': weeks, 'season': season}),
+              onPressed: () =>
+                  Navigator.pop(context, {'weeks': weeks, 'season': season}),
               child: const Text('Generate'),
             ),
           ],
@@ -83,6 +90,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     await _generatePlan(result);
   }
 
+  //Generating a new plan and setting the state to reflect in UI
   Future<void> _generatePlan(Map<String, dynamic>? result) async {
     if (result == null || key == null) return;
 
@@ -121,6 +129,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         }
       });
 
+      //output messages to the user
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Training plan created!')),
       );
@@ -131,6 +140,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     }
   }
 
+  //widget to build Exercise list
   Widget _buildExerciseList(List exercises) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,7 +148,9 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: Text('• ${exercise.name}: ${exercise.sets} sets of ${exercise.reps} reps')),
+            Expanded(
+                child: Text(
+                    '• ${exercise.name}: ${exercise.sets} sets of ${exercise.reps} reps')),
             if (exercise.description?.isNotEmpty == true)
               Tooltip(
                 message: exercise.description!,
@@ -150,6 +162,7 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
     );
   }
 
+  //widget to build training plan
   Widget _buildPlanDetails(TrainingPlan plan) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +183,9 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
               ),
             ),
             for (int day = 0; day < 7; day++)
-              for (int session = 0; session < week.days[day].length; session++) ...[
+              for (int session = 0;
+                  session < week.days[day].length;
+                  session++) ...[
                 const SizedBox(height: 12),
                 Text(
                   'Day ${day + 1}',
@@ -183,19 +198,23 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                 Text(
                   'Session ${session + 1}: ${week.days[day][session].type.name} '
                   '[${week.days[day][session].durationMins} mins]',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 6),
-                const Text('Warm-Up:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Warm-Up:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Padding(
                   padding: const EdgeInsets.only(left: 12),
                   child: _buildExerciseList(week.days[day][session].warmup),
                 ),
                 const SizedBox(height: 6),
-                const Text('Workout:', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Text('Workout:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 Padding(
                   padding: const EdgeInsets.only(left: 12),
-                  child: _buildExerciseList(week.days[day][session].mainWorkout),
+                  child:
+                      _buildExerciseList(week.days[day][session].mainWorkout),
                 ),
               ],
           ],
@@ -222,7 +241,8 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
               itemBuilder: (context, index) {
                 final plan = sortedPlans[index];
                 final isCurrent = index == 0;
-                final formattedDate = DateFormat('yyyy-MM-dd').format(plan.dateCreated);
+                final formattedDate =
+                    DateFormat('yyyy-MM-dd').format(plan.dateCreated);
 
                 return Card(
                   elevation: 3,
@@ -234,7 +254,9 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                         Row(
                           children: [
                             Text(
-                              isCurrent ? 'Current Workout' : 'Past Workout $index',
+                              isCurrent
+                                  ? 'Current Workout'
+                                  : 'Past Workout $index',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const Spacer(),
@@ -246,15 +268,16 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                   _checked[index] = checked;
                                   sortedPlans[index].setCompleted(checked);
                                 });
-                                await widget.storage.writeTrainingPlan(sortedPlans[index]);
+                                await widget.storage
+                                    .writeTrainingPlan(sortedPlans[index]);
                               },
                             ),
                             IconButton(
                               icon: Icon(_expanded[index] == true
                                   ? Icons.expand_less
                                   : Icons.expand_more),
-                              onPressed: () =>
-                                  setState(() => _expanded[index] = !(_expanded[index] ?? false)),
+                              onPressed: () => setState(() => _expanded[index] =
+                                  !(_expanded[index] ?? false)),
                             ),
                           ],
                         ),
@@ -281,12 +304,14 @@ class _TrainingPlanCardState extends State<TrainingPlanCard> {
                                   });
                                   await widget.storage.deleteTrainingPlanFile();
                                 },
-                                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.redAccent),
                                 child: const Text('Delete'),
                               ),
                             ],
                           ),
-                          Text('Date Created: $formattedDate', style: const TextStyle(fontSize: 12)),
+                          Text('Date Created: $formattedDate',
+                              style: const TextStyle(fontSize: 12)),
                         ],
                       ],
                     ),
