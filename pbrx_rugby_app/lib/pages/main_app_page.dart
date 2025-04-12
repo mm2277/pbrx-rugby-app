@@ -70,43 +70,43 @@ class _MainAppPageState extends State<MainAppPage> {
     }
 
     return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: false,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.account_circle_outlined),
-                  label: Text('Profile'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.sports_rugby),
-                  label: Text('Training Plans'),
-                ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
-
-                  if (value == 1) {
-                    // Tab 1 = Training Plans → refresh!
-                    _trainingPlansFuture =
-                        StoreDataLocally().getAllTrainingPlans();
-                  }
-                });
+      appBar: AppBar(
+        title: Text('PBRX Rugby'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(child: Text('Menu')),
+            ListTile(
+              leading: Icon(Icons.account_circle_outlined),
+              title: Text('Profile'),
+              onTap: () {
+                setState(() => selectedIndex = 0);
+                Navigator.pop(context); // Close drawer
               },
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
+            ListTile(
+              leading: Icon(Icons.sports_rugby),
+              title: Text('Training Plans'),
+              onTap: () {
+                setState(() {
+                  selectedIndex = 1;
+                  _trainingPlansFuture =
+                      StoreDataLocally().getAllTrainingPlans();
+                });
+                Navigator.pop(context);
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+      body: page,
     );
   }
 }
