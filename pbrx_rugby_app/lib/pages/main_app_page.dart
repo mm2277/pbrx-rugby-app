@@ -1,7 +1,4 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:pbrx_rugby_app/models/profile.dart';
 import 'package:pbrx_rugby_app/models/store_data_locally.dart';
 import 'package:pbrx_rugby_app/models/training_plan.dart';
@@ -9,8 +6,10 @@ import 'package:pbrx_rugby_app/widgets/create_profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/profile_card.dart';
 import 'package:pbrx_rugby_app/widgets/training_plan_card.dart';
 
+//Main app page displayed after onboarding unless profile.txt exists
+//allows navigation between profile and training plan sections
 class MainAppPage extends StatefulWidget {
-  final Profile profile;
+  final Profile profile; //users profile passed from onboarding or main_page
 
   const MainAppPage({super.key, required this.profile});
 
@@ -19,9 +18,10 @@ class MainAppPage extends StatefulWidget {
 }
 
 class _MainAppPageState extends State<MainAppPage> {
-  var selectedIndex = 0;
-  bool editing = false;
+  var selectedIndex = 0; // Track drawer items selected
+  bool editing = false; //track if the profile is being edited
 
+  ///toggle between viewing and editing the profile
   void toggleEditMode() {
     setState(() {
       editing = !editing;
@@ -30,6 +30,7 @@ class _MainAppPageState extends State<MainAppPage> {
 
   late Future<List<TrainingPlan>> _trainingPlansFuture;
 
+  ///initialises the future for training plan loading
   @override
   void initState() {
     super.initState();
@@ -39,15 +40,24 @@ class _MainAppPageState extends State<MainAppPage> {
   @override
   Widget build(BuildContext context) {
     Widget page;
+
+    // choose which page based on selectedIndex
     switch (selectedIndex) {
       case 0:
+        //profile page
         page = editing
             ? CreateProfileCard(
                 storage: StoreDataLocally(),
                 existingProfile: widget.profile,
-              ) // or pass your storage instance
-            : ProfileCard(profile: widget.profile, onEdit: toggleEditMode);
+                title: "Edit Profile",
+              )
+            : ProfileCard(
+                profile: widget.profile,
+                onEdit: toggleEditMode,
+              );
+
       case 1:
+        // Training plans page
         page = FutureBuilder<List<TrainingPlan>>(
           future: _trainingPlansFuture,
           builder: (context, snapshot) {
@@ -65,48 +75,55 @@ class _MainAppPageState extends State<MainAppPage> {
             }
           },
         );
+
       default:
-        throw UnimplementedError('no widget for $selectedIndex');
+        throw UnimplementedError('No widget for $selectedIndex');
     }
 
     return Scaffold(
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              extended: false,
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.account_circle_outlined),
-                  label: Text('Profile'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.sports_rugby),
-                  label: Text('Training Plans'),
-                ),
-              ],
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (value) {
-                setState(() {
-                  selectedIndex = value;
+      appBar: AppBar(
+        title: const Text('Rugby App'),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+      ),
 
-                  if (value == 1) {
-                    // Tab 1 = Training Plans → refresh!
-                    _trainingPlansFuture =
-                        StoreDataLocally().getAllTrainingPlans();
-                  }
-                });
+      //Navigation Drawer
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            const DrawerHeader(child: Text('Menu')),
+            //navigate to profile page
+            ListTile(
+              leading: const Icon(Icons.account_circle_outlined),
+              title: const Text('Profile'),
+              onTap: () {
+                setState(() => selectedIndex = 0);
+                Navigator.pop(context); // Close drawer
               },
             ),
-          ),
-          Expanded(
-            child: Container(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              child: page,
+            //navigate to training Plans page
+            ListTile(
+              leading: const Icon(Icons.sports_rugby),
+              title: const Text('Training Plans'),
+              onTap: () {
+                setState(() {
+                  selectedIndex = 1;
+                  _trainingPlansFuture =
+                      StoreDataLocally().getAllTrainingPlans(); // relaod
+                });
+                Navigator.pop(context);
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+
+      // Display selected page content
+      body: page,
     );
   }
 }

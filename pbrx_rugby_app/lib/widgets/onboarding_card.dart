@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+// A reusable widget for displaying an onboarding step with an image, title, description, and a button to continue or take action.
 class OnboardingCard extends StatelessWidget {
-  final String image, title, description, buttonText;
-  final Function onPressed;
+  final String image; // path to the image 
+  final String title; // title text
+  final String description; // description text
+  final String buttonText; // txt to display on the button
+  final Function onPressed; // callback function 
 
   const OnboardingCard({
     super.key,
@@ -23,14 +27,18 @@ class OnboardingCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Display images
           Padding(
             padding: const EdgeInsets.all(50.0),
             child: Image.asset(
               image,
             ),
           ),
+
+          // titles and descriptions UI
           Column(
             children: [
+              // Title text
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -40,6 +48,7 @@ class OnboardingCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              // Description text
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Text(
@@ -54,8 +63,10 @@ class OnboardingCard extends StatelessWidget {
               ),
             ],
           ),
+
+          // button to trigger callback function
           ElevatedButton(
-            onPressed: () => onPressed(),
+            onPressed: () => onPressed(), 
             child: Text(
               buttonText,
               style: TextStyle(
