@@ -59,11 +59,9 @@ class TrainingPlanGenerator {
         final cleanedJsonString = jsonString
             .replaceAll("```json", "")
             .replaceAll("```", "")
-            .replaceAllMapped(RegExp(r'/\*.*?\*/', dotAll: true),
-                (_) => '') 
+            .replaceAllMapped(RegExp(r'/\*.*?\*/', dotAll: true), (_) => '')
             .split('\n')
-            .where((line) =>
-                !line.trim().startsWith('//')) 
+            .where((line) => !line.trim().startsWith('//'))
             .join('\n')
             .trim();
 
@@ -96,25 +94,38 @@ class TrainingPlanGenerator {
     final ability = profile.ability?.name ?? 'Unknown';
 
     return '''
-You are a personal trainer specializing in rugby. Generate a realistic, progressive training plan in valid JSON format only for the following player:
--Name: $playerName
-- Ability Level: $ability (e.g. beginner, intermediate, advanced)
-- Position: $positionName (e.g. back, forward)
-- Key Skills: $skillsList
-- Season: $season
-- Weeks: $weeks
+You are a high-performance rugby trainer and strength & conditioning coach.
+
+Generate a personalized and progressive training plan in **valid JSON** format for the following rugby player:
+
+- Name: $playerName  
+- Ability Level: $ability (e.g. beginner, intermediate, advanced)  
+- Position: $positionName (e.g. back, forward)  
+- Key Skills: $skillsList (comma-separated list, e.g. "kicking, tackling")  
+- Season Phase: $season (e.g. "in-season", "out-season")  
+- Duration: $weeks weeks  
 
 Guidelines:
-- Adapt to season: More sessions during in-season; fewer in off-season.
-- Respect ability: Beginners get lighter load; advanced players can handle more.
--Tailor to position:
-    Backs → more sprinting, agility, conditioning
-    Forwards → more strength, power, tackling
-- Train all skills listed in $skillsList sufficiently.
+- **Adapt to Season Phase:**  
+  - In-season: Higher frequency, shorter sessions, recovery-conscious  
+  - Out-season: Progressive load, intense conditioning, tactical readiness  
 
-Requirements:
-- JSON output must follow this structure:
+- **Respect Ability Level:**  
+  - Beginner: Emphasize technique, mobility, and safe progressions  
+  - Intermediate: Increase complexity, intensity, and sport-specificity  
+  - Advanced: High intensity, targeted skill refinement, and performance focus  
 
+- **Tailor to Position:**  
+  - Backs: Sprinting, agility, footwork, conditioning  
+  - Forwards: Strength, power, tackling, scrummaging movements  
+
+- **Train Skills from Key Skills List:**  
+  - Include specific drills or movements that build these skills directly or supportively
+
+📋 Requirements:
+- Return **only** valid JSON in this structure:
+
+```json
 {
   "weeksDuration": $weeks,
   "season": "$season",
